@@ -422,6 +422,35 @@ function start() {
     gl.enable(gl.DEPTH_TEST);                               // Enable depth testing
     gl.depthFunc(gl.LEQUAL);                                // Near things obscure far things
 
+	var hud = false;
+
+	//disabling default right click event on canvas
+	canvas.oncontextmenu = function (e) {
+		e.preventDefault();
+	};
+	
+	//right click event	- hide or show buttons
+	canvas.onmousedown = function(e){
+		
+		var x = e.clientX;
+		var y = e.clientY;
+
+		if (e.which == 3){
+			if (hud == true){
+				for (var i = 1; i < 13; i++) {
+					document.getElementById("button"+i).style.visibility="hidden";
+				}
+				hud = false;
+			}
+			else {
+				for (var i = 1; i < 13; i++) {
+					document.getElementById("button"+i).style.visibility="visible";
+				}
+				hud = true;
+			}
+		}
+	}
+	
     // Initialize the shaders; this is where all the lighting for the
     // vertices and so forth is established.
     initShaders();
