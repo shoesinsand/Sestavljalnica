@@ -6,6 +6,7 @@
 canvas {
 	display: inline;
 	border: 1px solid black;
+	z-index: 1
 }
 
 h1 {
@@ -30,4 +31,10 @@ td {
 	left:150px;
 	font-size:2em;
 	color: white;
+}
+
+input {
+	height: 100px;
+	width: 100px;
+	z-index: 2;
 }
