@@ -398,7 +398,7 @@ function handleKeys() {
 	flying = 0.05;
   }
   //Ctrl
-  else if (currentlyPressedKeys[17]){
+  else if (currentlyPressedKeys[67]){
 	if (yPosition < 0.419){
 	  flying = -0.000000000000000000000000005;
 	}
