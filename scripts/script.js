@@ -29,7 +29,8 @@ var yawRate = 0;
 var xPosition = 0;
 var yPosition = 0.4;
 var zPosition = 0;
-var speed = 0;
+var speed = 0
+var flying = 0;
 
 // Helper variable for animation
 var lastTime = 0;
@@ -333,12 +334,14 @@ function animate() {
   var timeNow = new Date().getTime();
   if (lastTime != 0) {
     var elapsed = timeNow - lastTime;
-
+	
     if (speed != 0) {
       xPosition -= Math.sin(degToRad(yaw)) * speed * elapsed;
       zPosition -= Math.cos(degToRad(yaw)) * speed * elapsed;
-      yPosition = Math.sin(degToRad(yaw)) / 20 + 0.4;
     }
+	if (yPosition >= 0.4){
+	  yPosition += Math.sin(degToRad(flying)) + flying * elapsed / 20 * 0.4;
+	}
 
     yaw += yawRate * elapsed;
     pitch += pitchRate * elapsed;
@@ -389,21 +392,50 @@ function handleKeys() {
   } else {
     yawRate = 0;
   }
-
+  
+  // Spacebar
+  if (currentlyPressedKeys[32]){
+	flying = 0.05;
+  }
+  //Ctrl
+  else if (currentlyPressedKeys[17]){
+	if (yPosition < 0.419){
+	  flying = -0.000000000000000000000000005;
+	}
+	else{
+	  flying = -0.05
+	}
+  }
+  else {
+	flying = 0;  
+  }
+  
   if (currentlyPressedKeys[38] || currentlyPressedKeys[87]) {
     // Up cursor key or W
     speed = 0.003;
+	//shift
 	if (currentlyPressedKeys[16]){
 		speed = 0.008;
 	}
   } else if (currentlyPressedKeys[40] || currentlyPressedKeys[83]) {
     // Down cursor key
     speed = -0.003;
+	//shift
+	if (currentlyPressedKeys[16]){
+		speed = -0.008;
+	}
   } else {
     speed = 0;
   }
 }
 
+function metoda() {
+		alert("dela");
+	}
+
+
+
+	
 //
 // start
 //
@@ -422,6 +454,7 @@ function start() {
     gl.enable(gl.DEPTH_TEST);                               // Enable depth testing
     gl.depthFunc(gl.LEQUAL);                                // Near things obscure far things
 
+	//variable for checking if buttons are visible or not
 	var hud = false;
 
 	//disabling default right click event on canvas
