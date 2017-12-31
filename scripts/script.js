@@ -29,7 +29,7 @@ var yawRate = 0;
 var xPosition = 0;
 var yPosition = 0.4;
 var zPosition = 0;
-var speed = 0
+var speed = 0;
 var flying = 0;
 
 // Helper variable for animation
@@ -197,14 +197,14 @@ function initTextures() {
   wallTexture.image = new Image();
   wallTexture.image.onload = function () {
     handleTextureLoaded(wallTexture)
-  }
-  wallTexture.image.src = "./assets/ara.png";
+  };
+  wallTexture.image.src = "assets/ara.png";
 }
 
 function handleTextureLoaded(texture) {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-  // Third texture usus Linear interpolation approximation with nearest Mipmap selection
+  // Third texture uses Linear interpolation approximation with nearest Mipmap selection
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -229,6 +229,10 @@ function handleLoadedWorld(data) {
   var vertexTextureCoords = [];
   for (var i in lines) {
     var vals = lines[i].replace(/^\s+/, "").split(/\s+/);
+    if (vals.length == 6 && vals[5] == "") {
+        vals.pop();
+    }
+
     if (vals.length == 5 && vals[0] != "//") {
       // It is a line describing a vertex; get X, Y and Z first
       vertexPositions.push(parseFloat(vals[0]));
@@ -265,12 +269,12 @@ function handleLoadedWorld(data) {
 //
 function loadWorld() {
   var request = new XMLHttpRequest();
-  request.open("GET", "./assets/world.txt");
+  request.open("GET", "assets/world.txt");
   request.onreadystatechange = function () {
-    if (request.readyState == 4) {
+    if (request.readyState === 4) {
       handleLoadedWorld(request.responseText);
     }
-  }
+  };
   request.send();
 }
 
@@ -482,7 +486,7 @@ function start() {
 				hud = true;
 			}
 		}
-	}
+	};
 	
     // Initialize the shaders; this is where all the lighting for the
     // vertices and so forth is established.
