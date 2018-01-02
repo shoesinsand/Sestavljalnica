@@ -400,7 +400,10 @@ var currentObjectTexture = [
     0, 1,
     1, 0
 ];
-var rotator = 0;
+
+var rotatorX = 0;
+var rotatorY = 0;
+var rotatorZ = 0;
 var inSelectionObjectDepth = 4;
 var inSelectionObjectHeight = 0;
 var inSelectionObjectScale = 1;
@@ -418,7 +421,9 @@ function drawInSelection(vert) {
 
     var matrika = new Float32Array(16);
     mat4.identity(matrika);
-    mat4.rotate(matrika, degToRad(-rotator), [0, 1, 0]);
+    mat4.rotate(matrika, degToRad(-rotatorX), [1, 0, 0]);
+    mat4.rotate(matrika, degToRad(-rotatorY), [0, 1, 0]);
+    mat4.rotate(matrika, degToRad(-rotatorZ), [0, 0, 1]);
     mat4.scale(matrika, [inSelectionObjectScale, inSelectionObjectScale, inSelectionObjectScale]);
 
 
@@ -454,8 +459,9 @@ function newObject() {
     var matrix = mat4.identity(new Float32Array(16));
     mat4.rotate(matrix, degToRad(yaw), [0, 1, 0]);
     mat4.rotate(matrix, degToRad(pitch), [1, 0, 0]);
-    mat4.rotate(matrix, degToRad(- rotator), [0, 1, 0]);
-
+    mat4.rotate(matrix, degToRad(-rotatorX), [1, 0, 0]);
+    mat4.rotate(matrix, degToRad(-rotatorY), [0, 1, 0]);
+    mat4.rotate(matrix, degToRad(-rotatorZ), [0, 0, 1]);
 
     mat4.scale(matrix, [inSelectionObjectScale, inSelectionObjectScale, inSelectionObjectScale]);
 
@@ -638,13 +644,30 @@ function handleKeys() {
         inSelectionObjectScale -= 0.01;
     }
 
-    if (currentlyPressedKeys[90]) {
-        // h
-        rotator += 0.1;
-    } else if (currentlyPressedKeys[85]) {
-        // b
-        rotator -= 0.1;
+    if (currentlyPressedKeys[82]) {
+        // r
+        rotatorX += 0.2;
+    } else if (currentlyPressedKeys[84]) {
+        // t
+        rotatorX -= 0.2;
     }
+
+    if (currentlyPressedKeys[90]) {
+        // z
+        rotatorY += 0.2;
+    } else if (currentlyPressedKeys[85]) {
+        // u
+        rotatorY -= 0.2;
+    }
+
+    if (currentlyPressedKeys[73]) {
+        // i
+        rotatorZ += 0.2;
+    } else if (currentlyPressedKeys[79]) {
+        // o
+        rotatorZ -= 0.2;
+    }
+
 
 }
 
