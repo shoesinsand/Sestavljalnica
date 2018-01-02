@@ -32,6 +32,9 @@ var zPosition = 0;
 var speed = 0;
 var flying = 0;
 
+var lastMouseX = null;
+var lastMouseY = null;
+var mouseDown = false;
 // Helper variable for animation
 var lastTime = 0;
 
@@ -548,7 +551,14 @@ function animate() {
 //
 function handleKeyDown(event) {
     // storing the pressed state for individual key
-    // console.log(event.keyCode);
+    console.log(event.keyCode);
+
+    if (event.keyCode === 13) {
+        if (! currentlyPressedKeys[event.keyCode]) {
+            newObject();
+        }
+    }
+
     currentlyPressedKeys[event.keyCode] = true;
 }
 
@@ -719,8 +729,31 @@ function start() {
             e.preventDefault();
         };
 
+        document.onmousemove = function (ev) {
+            if (!mouseDown) {
+                return;
+            }
+            var newX = event.clientX;
+            var newY = event.clientY;
+
+            yaw += (newX - lastMouseX) * 0.1;
+
+            pitch += (newY - lastMouseY) * 0.1;
+
+            lastMouseX = newX;
+            lastMouseY = newY;
+        };
+
+        document.onmouseup = function (ev) {
+            mouseDown = false;
+        };
+
         //right click event	- hide or show buttons
         canvas.onmousedown = function(e){
+            mouseDown = true;
+            lastMouseX = event.clientX;
+            lastMouseY = event.clientY;
+
 
             var x = e.clientX;
             var y = e.clientY;
@@ -753,7 +786,9 @@ function start() {
                     hud = true;
                 }
             } else if (e.which === 1) {
-                newObject();
+                //newObject();
+
+                // TODO drag world around.
             }
         };
 
