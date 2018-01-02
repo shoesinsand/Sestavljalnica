@@ -750,13 +750,6 @@ function start() {
 
         //right click event	- hide or show buttons
         canvas.onmousedown = function(e){
-            mouseDown = true;
-            lastMouseX = event.clientX;
-            lastMouseY = event.clientY;
-
-
-            var x = e.clientX;
-            var y = e.clientY;
 
             if (e.which === 3){
                 if (hud === true){
@@ -786,9 +779,9 @@ function start() {
                     hud = true;
                 }
             } else if (e.which === 1) {
-                //newObject();
-
-                // TODO drag world around.
+                mouseDown = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
             }
         };
 
