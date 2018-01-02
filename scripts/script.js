@@ -430,10 +430,26 @@ function handleKeys() {
 }
 
 function metoda() {
-		alert("dela");
-	}
+	alert("dela");
+}
 
+var inputH = document.getElementById("inputH");
+var inputW = document.getElementById("inputW");
+var sliderH = document.getElementById("sliderH");
+var sliderW = document.getElementById("sliderW");
 
+inputH.innerHTML = sliderH.value;
+inputW.innerHTML = sliderW.value;
+
+sliderH.oninput = function() {
+	inputH.innerHTML = this.value;
+}
+sliderW.oninput = function() {
+	inputW.innerHTML = this.value;
+}
+inputH.oninput = function(){
+	alert("kebab!");
+}
 
 	
 //
@@ -473,12 +489,26 @@ function start() {
 				for (var i = 1; i < 13; i++) {
 					document.getElementById("button"+i).style.visibility="hidden";
 				}
+				document.getElementById("sliderH").style.visibility="hidden";
+				document.getElementById("sliderW").style.visibility="hidden";
+				document.getElementById("inputH").style.visibility="hidden";
+				document.getElementById("inputW").style.visibility="hidden";
+				document.getElementById("textH").style.visibility="hidden";
+				document.getElementById("textW").style.visibility="hidden";
+				document.getElementById("hudBG").style.visibility="hidden";
 				hud = false;
 			}
 			else {
 				for (var i = 1; i < 13; i++) {
 					document.getElementById("button"+i).style.visibility="visible";
 				}
+				document.getElementById("sliderH").style.visibility="visible";
+				document.getElementById("sliderW").style.visibility="visible";
+				document.getElementById("inputH").style.visibility="visible";
+				document.getElementById("inputW").style.visibility="visible";
+				document.getElementById("textH").style.visibility="visible";
+				document.getElementById("textW").style.visibility="visible";
+				document.getElementById("hudBG").style.visibility="visible";
 				hud = true;
 			}
 		}
