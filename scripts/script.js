@@ -452,8 +452,10 @@ function newObject() {
     var vertices = new Float32Array(currentObjectVertices);
 
     var matrix = mat4.identity(new Float32Array(16));
-    mat4.rotate(matrix, degToRad(yaw - rotator), [0, 1, 0]);
+    mat4.rotate(matrix, degToRad(yaw), [0, 1, 0]);
     mat4.rotate(matrix, degToRad(pitch), [1, 0, 0]);
+    mat4.rotate(matrix, degToRad(- rotator), [0, 1, 0]);
+
 
     mat4.scale(matrix, [inSelectionObjectScale, inSelectionObjectScale, inSelectionObjectScale]);
 
