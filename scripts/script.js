@@ -234,7 +234,7 @@ function handleLoadedWorld(data) {
     var vertexTextureCoords = [];
     for (var i in lines) {
         var vals = lines[i].replace(/^\s+/, "").split(/\s+/);
-        if (vals.length === 6 && vals[5] === "") {
+        if (vals.length === 6 && vals[5] === "") { // parser quickfix
             vals.pop();
         }
 
@@ -340,39 +340,45 @@ function drawScene() {
         drawInSelection(currentObjectVertices);
     }
     for (var i = 0; i < newObjects.length; i++) {
-        var vertexPositionBuffer = gl.createBuffer();
-        var obj = newObjects[i];
-        var vertices = obj.vertices;
-        var x, y, z;
-        x = obj.xyz[0];
-        y = obj.xyz[1];
-        z = obj.xyz[2];
-
-
-        // Select the vertexPositionBuffer as the one to apply vertex
-        // operations to from here out.
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
-
-        // Set the drawing position to the "identity" point, which is
-        // the center of the scene.
-        mat4.identity(mvMatrix);
-        mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
-        mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
-        mat4.translate(mvMatrix, [-xPosition, -yPosition, -zPosition]);
-        // Now pass the list of vertices into WebGL to build the shape. We
-        // do this by creating a Float32Array from the JavaScript array,
-        // then use it to fill the current vertex buffer.
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-        vertexPositionBuffer.itemSize = 3;
-        vertexPositionBuffer.numItems = vertices.length / 3;
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        setMatrixUniforms();
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexPositionBuffer.numItems);
+        drawObject(newObjects[i]);
     }
 
 }
+
+function drawObject(obj) {
+    var vertexPositionBuffer = gl.createBuffer();
+    var vertices = obj.vertices;
+    var x, y, z;
+    x = obj.xyz[0];
+    y = obj.xyz[1];
+    z = obj.xyz[2];
+
+
+    // Select the vertexPositionBuffer as the one to apply vertex
+    // operations to from here out.
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+
+    // Set the drawing position to the "identity" point, which is
+    // the center of the scene.
+    mat4.identity(mvMatrix);
+    mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
+    mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
+    mat4.translate(mvMatrix, [-xPosition, -yPosition, -zPosition]);
+    // Now pass the list of vertices into WebGL to build the shape. We
+    // do this by creating a Float32Array from the JavaScript array,
+    // then use it to fill the current vertex buffer.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    vertexPositionBuffer.itemSize = 3;
+    vertexPositionBuffer.numItems = vertices.length / 3;
+
+    // TODO textures
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    setMatrixUniforms();
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexPositionBuffer.numItems);
+}
+
 var currentObjectVertices = [
     -1, 0, 0,
     -1, 0, 1,
@@ -410,35 +416,34 @@ function drawInSelection(vert) {
     // the center of the scene.
     mat4.identity(mvMatrix);
 
-    //rotator += 0.1;
     var matrika = new Float32Array(16);
     mat4.identity(matrika);
-    // mat4.rotate(matrika, degToRad(-rotator), [0, 1, 0]);
-    // mat4.scale(matrika, [inSelectionObjectScale, inSelectionObjectScale, inSelectionObjectScale]);
+    mat4.rotate(matrika, degToRad(-rotator), [0, 1, 0]);
+    mat4.scale(matrika, [inSelectionObjectScale, inSelectionObjectScale, inSelectionObjectScale]);
 
 
     var vertx = multiplyMVr(matrika, vertices);
-    //vertx = vertices;
+
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertx), gl.STATIC_DRAW);
     vertexPositionBuffer.itemSize = 3;
     vertexPositionBuffer.numItems = vertices.length / 3;
 
+    // TODO textures
+
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    //mat4.translate(mvMatrix, [0, -inSelectionObjectHeight, -inSelectionObjectDepth]);
+    mat4.translate(mvMatrix, [0, -inSelectionObjectHeight, -inSelectionObjectDepth]);
     setMatrixUniforms();
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexPositionBuffer.numItems);
 
 }
 
 function newObject() {
-
     var x, y, z, dx, dy, dz;
 
     dx = Math.sin(degToRad(yaw)) * inSelectionObjectDepth * Math.cos(degToRad(pitch));
     dz = Math.cos(degToRad(yaw)) * inSelectionObjectDepth * Math.cos(degToRad(pitch));
     dy = Math.sin(degToRad(pitch)) * inSelectionObjectDepth;
-
 
     x = xPosition - dx;
     z = zPosition - dz;
@@ -447,15 +452,13 @@ function newObject() {
     var vertices = new Float32Array(currentObjectVertices);
 
     var matrix = mat4.identity(new Float32Array(16));
-    mat4.rotate(matrix, degToRad(-pitch), [1, 0, 0]);
-    mat4.rotate(matrix, degToRad(yaw), [0, 1, 0]);
+    mat4.rotate(matrix, degToRad(yaw - rotator), [0, 1, 0]);
+    mat4.rotate(matrix, degToRad(pitch), [1, 0, 0]);
+
     mat4.scale(matrix, [inSelectionObjectScale, inSelectionObjectScale, inSelectionObjectScale]);
 
-    //mat4.translate(matrix, [x, y, z]);
-
-
     var newVertices = multiplyMVr(matrix, vertices);
-
+    // but it works :')
     for ( var i = 2; i < newVertices.length; i += 3) { // depth
         newVertices[i] += z;
     }
@@ -466,19 +469,7 @@ function newObject() {
         newVertices[i] += x;
     }
 
-
-    newObjects.push({"vertices":newVertices, "id": newObjestCount++, "xyz":[x, y, z]});
-
-    console.log(newObjects[newObjects.length - 1]);
-
-    // for ( var counter = 0; counter < vertices.length; counter += 3) {
-    //     var xyz = multiplyMV(matrix, [vertices[counter * 3], vertices[counter * 3 + 1], vertices[counter * 3 + 2]])
-    //     vertices[counter * 3] = xyz[0];
-    //     vertices[counter * 3 + 1] = xyz[1];
-    //     vertices[counter * 3 + 2] = xyz[2];
-    // }
-    //
-
+    newObjects.push({"vertices":newVertices, "texture":currentObjectTexture, "id": newObjestCount++, "xyz":[x, y, z]});
 
 }
 
@@ -645,6 +636,14 @@ function handleKeys() {
         inSelectionObjectScale -= 0.01;
     }
 
+    if (currentlyPressedKeys[90]) {
+        // h
+        rotator += 0.1;
+    } else if (currentlyPressedKeys[85]) {
+        // b
+        rotator -= 0.1;
+    }
+
 }
 
 function metoda() {
@@ -656,7 +655,7 @@ var inputW = document.getElementById("inputW");
 var sliderH = document.getElementById("sliderH");
 var sliderW = document.getElementById("sliderW");
 
-inputH.innerHTML = sliderH.value;
+//inputH.innerHTML = sliderH.value;
 inputW.innerHTML = sliderW.value;
 
 sliderH.oninput = function() {
@@ -756,7 +755,6 @@ function start() {
             }
         }, 15);
 
-        //setInterval(report, 1000)
         document.getElementById("button1").onclick = function() {
             currentObjectVertices = [
                 -1, 0, 0,
@@ -776,18 +774,9 @@ function start() {
             ];
         };
 
-
-
-
         document.getElementById("button12").onclick = function() {
             currentObjectVertices = [];
         };
     }
 }
 
-
-function report() {
-    console.log(xPosition - Math.sin(degToRad(yaw)) * inSelectionObjectDepth);
-    console.log(zPosition - Math.cos(degToRad(yaw)) * inSelectionObjectDepth);
-    console.log("____________")
-}

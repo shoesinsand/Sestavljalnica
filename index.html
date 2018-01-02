@@ -44,9 +44,10 @@
 		</script>
 	</head>
 	<body onload="start()">
+	<div id="title" style=""><h1>SESTAVLJALNICA</h1>
 		<div id="content">
 		
-			<br><br>
+			<br>
 		
 			<!-- Canvas -->
 			<canvas id="glcanvas" width="1280px" height="720px">
@@ -67,7 +68,7 @@
 			<input type="button" id="button11" onClick="" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1225px" value="test"/>
 			<input type="button" id="button12" onClick="" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1330px" value="test"/>
 			
-			<input type="image"id="hudBG" src="assets/hud.jpg" style="visibility: hidden; z-index:1; position:absolute; top:90px; left:1110px">
+			<input type="image"id="hudBG" src="assets/wall.png" style="visibility: hidden; z-index:1; position:absolute; top:90px; left:1110px">
 			<h2 id="textH" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1125px">Height:</h2>
 			<input type="text" id="inputH" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1205px">
 			<input type="range" id="sliderH" min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1145px">
@@ -77,21 +78,26 @@
 
     		<div id="loadingtext">Loading world...</div>
 			
-			<div id="title" style="position:absolute; left: 1515px; top: 150px"><h1>SESTAV-</h1>
-			<h1>LJALNICA</h1></div>
-			
-			<div id="controls" align="left" style="position:absolute; left: 1510px; top: 450px">
-			<h3>CONTROLS</h3>
-			<code>W</code> or <code>↑</code> - move forward <br>
-			<code>S</code> or <code>↓</code> - move backwards <br>
-			<code>A</code> or <code>←</code> - turn left <br>
-			<code>D</code> or <code>→</code> - turn right <br><br>
-			<code>Shift</code> - run <br><br>
-			<code>Spacebar</code> - fly up <br>
-			<code>C</code> - fly down <br><br>
-			<code>Page Up</code> - look up <br>
-			<code>Page Down</code> - look down <br><br>
-			<code>Right click</code> - open menu
+
+			<span id="controls" align="left" style="float: right; left: 1510px; top: 450px">
+				<h3>CONTROLS</h3>
+				<code>W</code> or <code>↑</code> - move forward <br>
+				<code>S</code> or <code>↓</code> - move backwards <br>
+				<code>A</code> or <code>←</code> - turn left <br>
+				<code>D</code> or <code>→</code> - turn right <br><br>
+				<code>Shift</code> - run <br><br>
+				<code>Spacebar</code> - fly up <br>
+				<code>C</code> - fly down <br><br>
+				<code>Page Up</code> - look up <br>
+				<code>Page Down</code> - look down <br><br>
+				<code>Right click</code> - open menu<br>
+				<code>Left click</code> - Place object<br>
+				<code>Z</code> and <code>U</code> - rotate left and right<br>
+				<code>K</code> and <code>M</code> - move up and down<br>
+				<code>J</code> and <code>N</code> - move farther and closer<br>
+				<code>H</code> and <code>B</code> - bigger and smaller<br>
+
+			</span>
 		</div>
 	</body>
 </html>
