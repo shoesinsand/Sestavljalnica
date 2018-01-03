@@ -38,6 +38,14 @@ var mouseDown = false;
 // Helper variable for animation
 var lastTime = 0;
 
+
+var htmlX;
+var htmlY;
+var htmlZ;
+var htmlYaw;
+var htmlPitch;
+
+
 // new objects will be stored in newObjects array.
 // items are dictionary id, vertices, xyz
 var newObjects = [];
@@ -510,8 +518,7 @@ function multiplyMV(matrix, vector) {
     }
     var normal = xyzn[3];
     if (normal !== 1) {
-        var tmp = xyzn[0] / normal;
-        xyzn[0] = tmp;
+        xyzn[0] = xyzn[0] / normal;
         xyzn[1] = xyzn[1] / normal;
         xyzn[2] = xyzn[2] / normal;
     }
@@ -681,16 +688,13 @@ function handleKeys() {
 
 }
 
-function metoda() {
-    alert("dela");
-}
 
 var inputH = document.getElementById("inputH");
 var inputW = document.getElementById("inputW");
 var sliderH = document.getElementById("sliderH");
 var sliderW = document.getElementById("sliderW");
 
-//inputH.innerHTML = sliderH.value;
+inputH.innerHTML = sliderH.value;
 inputW.innerHTML = sliderW.value;
 
 sliderH.oninput = function() {
@@ -736,10 +740,15 @@ function start() {
             var newX = event.clientX;
             var newY = event.clientY;
 
-            yaw += (newX - lastMouseX) * 0.1;
+            if (! currentlyPressedKeys[17]) { // ctr
 
-            pitch += (newY - lastMouseY) * 0.1;
+                yaw += (newX - lastMouseX) * 0.1;
 
+                pitch += (newY - lastMouseY) * 0.1;
+            } else {
+                rotatorY -= (newX - lastMouseX) * 0.1;
+                rotatorX -= (newY - lastMouseY) * 0.1;
+            }
             lastMouseX = newX;
             lastMouseY = newY;
         };
@@ -826,10 +835,141 @@ function start() {
                 1, 1, 1
             ];
         };
+        document.getElementById("button2").onclick = function() { // cube
+            currentObjectVertices = [
+                -0.5, -0.5, -0.5,
+                -0.5, -0.5, 0.5,
+                -0.5, 0.5, -0.5,
+                -0.5, 0.5, 0.5,
+
+                -0.5, 0.5, -0.5,
+                -0.5, 0.5, 0.5,
+                0.5, 0.5, -0.5,
+                0.5, 0.5, 0.5,
+
+                0.5, -0.5, -0.5,
+                0.5, -0.5, 0.5,
+                0.5, 0.5, -0.5,
+                0.5, 0.5, 0.5,
+
+                -0.5, 0.5, -0.5,
+                -0.5, 0.5, 0.5,
+                0.5, 0.5, -0.5,
+                0.5, 0.5, 0.5,
+
+                0.5, -0.5, -0.5,
+                0.5, -0.5, 0.5,
+                -0.5, -0.5, -0.5,
+                -0.5, -0.5, 0.5,
+
+                0.5, -0.5, -0.5,
+                -0.5, -0.5, -0.5,
+                0.5, 0.5, -0.5,
+                -0.5, 0.5, -0.5,
+
+                0.5, -0.5, 0.5,
+                -0.5, -0.5, 0.5,
+                0.5, 0.5, 0.5,
+                -0.5, 0.5, 0.5,
+
+            ];
+        };
 
         document.getElementById("button12").onclick = function() {
-            currentObjectVertices = [];
+            currentObjectVertices = false;
         };
+
+
+        htmlX = document.getElementById("xCoor");
+        htmlX.onchange = function(event) {
+            xPosition = htmlX.value;
+        };
+
+        htmlY = document.getElementById("yCoor");
+        htmlY.onchange = function(event) {
+            yPosition = htmlY.value;
+        };
+
+        htmlZ = document.getElementById("zCoor");
+        htmlZ.onchange = function(event) {
+            zPosition = htmlZ.value;
+        };
+
+        htmlYaw = document.getElementById("yaw");
+        htmlYaw.onchange = function(event) {
+            yaw = htmlYaw.value;
+        };
+
+        htmlPitch = document.getElementById("pitch");
+        htmlPitch.onchange = function(event) {
+            yaw = htmlPitch.value;
+        };
+
+        document.getElementById("xMinus").onclick = function(event) {
+            xPosition -= 1;
+        };
+
+        document.getElementById("xPlus").onclick = function(event) {
+            xPosition += 1;
+        };
+
+        document.getElementById("yMinus").onclick = function(event) {
+            yPosition -= 1;
+        };
+
+        document.getElementById("yPlus").onclick = function(event) {
+            yPosition += 1;
+        };
+
+        document.getElementById("zMinus").onclick = function(event) {
+            zPosition -= 1;
+        };
+
+        document.getElementById("zPlus").onclick = function(event) {
+            zPosition += 1;
+        };
+
+        document.getElementById("yawMinus").onclick = function(event) {
+            yaw -= 1;
+        };
+
+        document.getElementById("yawPlus").onclick = function(event) {
+            yaw += 1;
+        };
+
+        document.getElementById("pitchMinus").onclick = function(event) {
+            pitch -= 1;
+        };
+
+        document.getElementById("pitchPlus").onclick = function(event) {
+            pitch += 1;
+        };
+
+        var positiveDegrees = function(d) {
+            while (d < 0) {
+                d += 360;
+            }
+            return d % 360;
+        };
+
+        setInterval(function() {
+            if (document.activeElement !== htmlPitch) {
+                htmlPitch.value = positiveDegrees(pitch);
+            }
+            if (document.activeElement !== htmlYaw) {
+                htmlYaw.value = positiveDegrees(yaw);
+            }
+            if (document.activeElement !== htmlX) {
+                htmlX.value = xPosition;
+            }
+            if (document.activeElement !== htmlY) {
+                htmlY.value = yPosition;
+            }
+            if (document.activeElement !== htmlZ) {
+                htmlZ.value = zPosition;
+            }
+        },
+            250)
     }
 }
 
