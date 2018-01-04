@@ -42,43 +42,44 @@
 		        vTextureCoord = aTextureCoord;
 		    }
 		</script>
-</head>
-<body onload="start()">
-<div id="title" style=""><h1>SESTAVLJALNICA</h1>
-	<div id="content">
+    </head>
+    <body onload="start()">
+        <div id="title" style=""><h1>SESTAVLJALNICA</h1>
+	        <div id="content">
 
-		<br>
+		    <br>
 
-		<!-- Canvas -->
-		<canvas id="glcanvas" width="1280px" height="720px">
-			No <code>&lt;canvas&gt;</code> suppport in your browser.
-		</canvas>
+                <!-- Canvas -->
+                <canvas id="glcanvas" width="1280px" height="720px">
+                    No <code>&lt;canvas&gt;</code> suppport in your browser.
+                </canvas>
 
-		<!-- buttons -->
-		<input type="button" id="button1" style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1120px" value="test"/>
-		<input type="button" id="button2"  style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1225px" value="test"/>
-		<input type="button" id="button3"  style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1330px" value="test"/>
-		<input type="button" id="button4"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1120px" value="test"/>
-		<input type="button" id="button5"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1225px" value="test"/>
-		<input type="button" id="button6"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1330px" value="test"/>
-		<input type="button" id="button7"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1120px" value="test"/>
-		<input type="button" id="button8"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1225px" value="test"/>
-		<input type="button" id="button9"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1330px" value="test"/>
-		<input type="button" id="button10" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1120px" value="test"/>
-		<input type="button" id="button11" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1225px" value="test"/>
-		<input type="button" id="button12" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1330px" value="test"/>
+                <!-- buttons -->
+                <input type="button" id="button1" style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1120px" value="SomeShape"/>
+                <input type="button" id="button2"  style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1225px" value="Cube"/>
+                <input type="button" id="button3"  style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1330px" value="test"/>
+                <input type="button" id="button4"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1120px" value="test"/>
+                <input type="button" id="button5"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1225px" value="test"/>
+                <input type="button" id="button6"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1330px" value="test"/>
+                <input type="button" id="button7"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1120px" value="test"/>
+                <input type="button" id="button8"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1225px" value="test"/>
+                <input type="button" id="button9"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1330px" value="test"/>
+                <input type="button" id="button10" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1120px" value="test"/>
+                <input type="button" id="button11" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1225px" value="test"/>
+                <input type="button" id="button12" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1330px" value="Thin air"/>
 
-		<input type="image"id="hudBG" src="assets/wall.png" style="visibility: hidden; z-index:1; position:absolute; top:90px; left:1110px">
-		<h2 id="textH" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1125px">Height:</h2>
-		<input type="text" id="inputH" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1205px">
-		<input type="range" id="sliderH" min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1145px">
-		<h2 id="textW" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1285px">Width:</h2>
-		<input type="text" id="inputW" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1360px">
-		<input type="range" id="sliderW"min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1305px">
+                <input type="image"id="hudBG" src="assets/wall.png" style="visibility: hidden; z-index:1; position:absolute; top:90px; left:1110px">
+                <h2 id="textH" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1125px">Height:</h2>
+                <input type="text" id="inputH" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1205px">
+                <input type="range" id="sliderH" min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1145px">
+                <h2 id="textW" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1285px">Width:</h2>
+                <input type="text" id="inputW" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1360px">
+                <input type="range" id="sliderW"min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1305px">
+                <input type="button" id="changeObjectTexture" style="visibility: hidden; z-index:2; position:absolute; top:625px; left:1171px; height: 20px; width: 200px" value="Change object texture"/>
+                <input type="button" id="changeWorldTexture" style="visibility: hidden; z-index:2; position:absolute; top:655px; left:1171px; height: 20px; width: 200px" value="Change world texture"/>
 
-		<div id="loadingtext">Loading world...</div>
 
-				<span id="controls" align="left" style="float: right; margin: 20px">
+                <span id="controls" align="left" style="float: right; margin: 20px">
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X:&nbsp;<button id="xMinus">-</button>&nbsp;<input title="X: " type="number" id="xCoor" style="width: 10ch; border:none; outline:none;">&nbsp;<button id="xPlus">+</button>
 					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y:&nbsp;<button id="yMinus">-</button>&nbsp;<input title="Y: " type="number" id="yCoor" style="width: 10ch; border:none; outline:none;">&nbsp;<button id="yPlus">+</button>
 					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z:&nbsp;<button id="zMinus">-</button>&nbsp;<input title="Z: " type="number" id="zCoor" style="width: 10ch; border:none; outline:none;">&nbsp;<button id="zPlus">+</button>
