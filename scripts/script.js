@@ -12,8 +12,6 @@ var mvMatrixStack = [];
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
 
-// Variables for storing textures
-var wallTexture;
 
 // Variable that stores  loading state of textures.
 var texturesLoaded = false;
@@ -31,6 +29,9 @@ var yPosition = 0.4;
 var zPosition = 0;
 var speed = 0;
 var flying = 0;
+
+var objectTexture = 1;
+var worldTexture = 0;
 
 var lastMouseX = null;
 var lastMouseY = null;
@@ -208,13 +209,59 @@ function setMatrixUniforms() {
 // the texture images. The handleTextureLoaded() callback will finish
 // the job; it gets called each time a texture finishes loading.
 //
+
+var texturesArray;
 function initTextures() {
-    wallTexture = gl.createTexture();
+    texturesArray = [false, false, false, false];
+
+    var grass = gl.createTexture();
+    grass.image = new Image();
+    grass.image.onload = function () {
+        handleTextureLoaded(grass);
+        texturesArray[0] = grass;
+    };
+    grass.image.src = "assets/grass.png";
+
+    var wallTexture = gl.createTexture();
     wallTexture.image = new Image();
     wallTexture.image.onload = function () {
-        handleTextureLoaded(wallTexture)
+        handleTextureLoaded(wallTexture);
+        texturesArray[1] = wallTexture;
     };
-    wallTexture.image.src = "assets/ara.png";
+    wallTexture.image.src = "assets/wall.png";
+
+    var ara = gl.createTexture();
+    ara.image = new Image();
+    ara.image.onload = function () {
+        handleTextureLoaded(ara);
+        texturesArray[2] = ara;
+    };
+    ara.image.src = "assets/ara.png";
+
+    var crate = gl.createTexture();
+    crate.image = new Image();
+    crate.image.onload = function () {
+        handleTextureLoaded(crate);
+        texturesArray[3] = crate;
+    };
+    crate.image.src = "assets/crate.gif";
+
+    checkTextures();
+}
+
+function checkTextures() {
+    var done = true;
+    for (var texture of texturesArray) {
+        if (texture === false) {
+            done = false;
+            break;
+        }
+    }
+    if (done) {
+        texturesLoaded = true;
+    } else {
+        setInterval(checkTextures, 100);
+    }
 }
 
 function handleTextureLoaded(texture) {
@@ -228,10 +275,6 @@ function handleTextureLoaded(texture) {
     gl.generateMipmap(gl.TEXTURE_2D);
 
     gl.bindTexture(gl.TEXTURE_2D, null);
-
-    // when texture loading is finished we can draw scene.
-    texturesLoaded = true;
-    currentObjectTexture = wallTexture;
 
 }
 
@@ -331,7 +374,7 @@ function drawScene() {
 
     // Activate textures
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, wallTexture);
+    gl.bindTexture(gl.TEXTURE_2D, texturesArray[worldTexture%texturesArray.length]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
     // Set the texture coordinates attribute for the vertices.
@@ -551,7 +594,7 @@ function drawInSelection(vert) {
 
     // Specify the texture to map onto the faces.
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, currentObjectTexture);
+    gl.bindTexture(gl.TEXTURE_2D, texturesArray[objectTexture%texturesArray.length]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
     var VertexIndexBuffer = gl.createBuffer();
@@ -606,7 +649,7 @@ function newObject() {
         newVertices[i] += x;
     }
 
-    newObjects.push({"vertices":newVertices, "vertexIndices": currentObjectIndices, "texture":currentObjectTexture, "textureCoordinates":currentObjectTextureCoordinates, "id": newObjestCount++, "xyz":[x, y, z]});
+    newObjects.push({"vertices":newVertices, "vertexIndices": currentObjectIndices, "texture":texturesArray[objectTexture%texturesArray.length], "textureCoordinates":currentObjectTextureCoordinates, "id": newObjestCount++, "xyz":[x, y, z]});
 
 }
 
@@ -895,6 +938,8 @@ function start() {
                     document.getElementById("textH").style.visibility="hidden";
                     document.getElementById("textW").style.visibility="hidden";
                     document.getElementById("hudBG").style.visibility="hidden";
+                    document.getElementById("changeObjectTexture").style.visibility="hidden";
+                    document.getElementById("changeWorldTexture").style.visibility="hidden";
                     hud = false;
                 }
                 else {
@@ -908,6 +953,8 @@ function start() {
                     document.getElementById("textH").style.visibility="visible";
                     document.getElementById("textW").style.visibility="visible";
                     document.getElementById("hudBG").style.visibility="visible";
+                    document.getElementById("changeObjectTexture").style.visibility="visible";
+                    document.getElementById("changeWorldTexture").style.visibility="visible";
                     hud = true;
                 }
             } else if (e.which === 1) {
@@ -990,10 +1037,10 @@ function start() {
                 -1.0,  1.0,  1.0,
 
                 // Back face
+                1.0, -1.0, -1.0,
                 -1.0, -1.0, -1.0,
                 -1.0,  1.0, -1.0,
                 1.0,  1.0, -1.0,
-                1.0, -1.0, -1.0,
 
                 // Top face
                 -1.0,  1.0, -1.0,
@@ -1008,10 +1055,11 @@ function start() {
                 -1.0, -1.0,  1.0,
 
                 // Right face
+                1.0, -1.0,  1.0,
                 1.0, -1.0, -1.0,
                 1.0,  1.0, -1.0,
                 1.0,  1.0,  1.0,
-                1.0, -1.0,  1.0,
+
 
                 // Left face
                 -1.0, -1.0, -1.0,
@@ -1159,7 +1207,14 @@ function start() {
                 htmlZ.value = zPosition.toString().slice(0, numOfChars);
             }
         },
-            250)
+            250);
+
+        document.getElementById("changeObjectTexture").onclick = function(event) {
+            objectTexture++;
+        };
+        document.getElementById("changeWorldTexture").onclick = function(event) {
+            worldTexture++;
+        };
     }
 }
 
