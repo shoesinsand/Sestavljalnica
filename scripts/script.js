@@ -38,6 +38,14 @@ var mouseDown = false;
 // Helper variable for animation
 var lastTime = 0;
 
+
+var htmlX;
+var htmlY;
+var htmlZ;
+var htmlYaw;
+var htmlPitch;
+
+
 // new objects will be stored in newObjects array.
 // items are dictionary id, vertices, xyz
 var newObjects = [];
@@ -223,6 +231,8 @@ function handleTextureLoaded(texture) {
 
     // when texture loading is finished we can draw scene.
     texturesLoaded = true;
+    currentObjectTexture = wallTexture;
+
 }
 
 //
@@ -351,11 +361,9 @@ function drawScene() {
 function drawObject(obj) {
     var vertexPositionBuffer = gl.createBuffer();
     var vertices = obj.vertices;
-    var x, y, z;
-    x = obj.xyz[0];
-    y = obj.xyz[1];
-    z = obj.xyz[2];
-
+    var texture = obj.texture;
+    var textureCoordinates = obj.textureCoordinates;
+    var vertexIndices = obj.vertexIndices;
 
     // Select the vertexPositionBuffer as the one to apply vertex
     // operations to from here out.
@@ -374,35 +382,123 @@ function drawObject(obj) {
     vertexPositionBuffer.itemSize = 3;
     vertexPositionBuffer.numItems = vertices.length / 3;
 
-    // TODO textures
-
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    var vertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+
+    // Pass the texture coordinates into WebGL
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
+    vertexTextureCoordBuffer.itemSize = 2;
+    vertexTextureCoordBuffer.numItems = textureCoordinates.length / vertexTextureCoordBuffer.itemSize;
+
+    // Set the texture coordinates attribute for the vertices.
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Specify the texture to map onto the faces.
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+    var VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
+
+    // Now send the element array to GL
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndices), gl.STATIC_DRAW);
+    VertexIndexBuffer.itemSize = 1;
+    VertexIndexBuffer.numItems = vertexIndices.length;
+
+
+    // Draw the cube.
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
     setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexPositionBuffer.numItems);
+    gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
 }
 
 var currentObjectVertices = [
-    -1, 0, 0,
-    -1, 0, 1,
-    -1, 1, 0,
-    -1, 1, 1,
+    // Front face
+    -1.0, -1.0,  1.0,
+    1.0, -1.0,  1.0,
+    1.0,  1.0,  1.0,
+    -1.0,  1.0,  1.0,
 
-    -1, 1, 0,
-    -1, 1, 1,
-    1, 1, 0,
-    1, 1, 1,
+    // Back face
+    -1.0, -1.0, -1.0,
+    -1.0,  1.0, -1.0,
+    1.0,  1.0, -1.0,
+    1.0, -1.0, -1.0,
 
-    1, 0, 0,
-    1, 0, 1,
-    1, 1, 0,
-    1, 1, 1
+    // Top face
+    -1.0,  1.0, -1.0,
+    -1.0,  1.0,  1.0,
+    1.0,  1.0,  1.0,
+    1.0,  1.0, -1.0,
+
+    // Bottom face
+    -1.0, -1.0, -1.0,
+    1.0, -1.0, -1.0,
+    1.0, -1.0,  1.0,
+    -1.0, -1.0,  1.0,
+
+    // Right face
+    1.0, -1.0, -1.0,
+    1.0,  1.0, -1.0,
+    1.0,  1.0,  1.0,
+    1.0, -1.0,  1.0,
+
+    // Left face
+    -1.0, -1.0, -1.0,
+    -1.0, -1.0,  1.0,
+    -1.0,  1.0,  1.0,
+    -1.0,  1.0, -1.0
 ];
 
-var currentObjectTexture = [
-    0, 1,
-    1, 0
+var currentObjectTextureCoordinates = [
+    // Front
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Back
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Top
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Bottom
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Right
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Left
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0
 ];
+
+var currentObjectIndices = [
+    0,  1,  2,      0,  2,  3,    // front
+    4,  5,  6,      4,  6,  7,    // back
+    8,  9,  10,     8,  10, 11,   // top
+    12, 13, 14,     12, 14, 15,   // bottom
+    16, 17, 18,     16, 18, 19,   // right
+    20, 21, 22,     20, 22, 23    // left
+];
+
+var currentObjectTexture;
 
 var rotatorX = 0;
 var rotatorY = 0;
@@ -440,9 +536,39 @@ function drawInSelection(vert) {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    var vertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+
+    // Pass the texture coordinates into WebGL
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(currentObjectTextureCoordinates), gl.STATIC_DRAW);
+    vertexTextureCoordBuffer.itemSize = 2;
+    vertexTextureCoordBuffer.numItems = currentObjectTextureCoordinates.length / vertexTextureCoordBuffer.itemSize;
+
+    // Set the texture coordinates attribute for the vertices.
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Specify the texture to map onto the faces.
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, currentObjectTexture);
+    gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+    var VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
+
+    // Now send the element array to GL
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(currentObjectIndices), gl.STATIC_DRAW);
+    VertexIndexBuffer.itemSize = 1;
+    VertexIndexBuffer.numItems = currentObjectIndices.length;
+
+
+    // Draw the cube.
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
     mat4.translate(mvMatrix, [0, -inSelectionObjectHeight, -inSelectionObjectDepth]);
+
     setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexPositionBuffer.numItems);
+    gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
 }
 
@@ -480,7 +606,7 @@ function newObject() {
         newVertices[i] += x;
     }
 
-    newObjects.push({"vertices":newVertices, "texture":currentObjectTexture, "id": newObjestCount++, "xyz":[x, y, z]});
+    newObjects.push({"vertices":newVertices, "vertexIndices": currentObjectIndices, "texture":currentObjectTexture, "textureCoordinates":currentObjectTextureCoordinates, "id": newObjestCount++, "xyz":[x, y, z]});
 
 }
 
@@ -510,8 +636,7 @@ function multiplyMV(matrix, vector) {
     }
     var normal = xyzn[3];
     if (normal !== 1) {
-        var tmp = xyzn[0] / normal;
-        xyzn[0] = tmp;
+        xyzn[0] = xyzn[0] / normal;
         xyzn[1] = xyzn[1] / normal;
         xyzn[2] = xyzn[2] / normal;
     }
@@ -654,43 +779,45 @@ function handleKeys() {
         inSelectionObjectScale -= 0.01;
     }
 
+    var rotationfactor = 0.2;
+    if (currentlyPressedKeys[16]) {
+        rotationfactor = 0.6
+    }
+
     if (currentlyPressedKeys[82]) {
         // r
-        rotatorX += 0.2;
+        rotatorX += rotationfactor;
     } else if (currentlyPressedKeys[84]) {
         // t
-        rotatorX -= 0.2;
+        rotatorX -= rotationfactor;
     }
 
     if (currentlyPressedKeys[90]) {
         // z
-        rotatorY += 0.2;
+        rotatorY += rotationfactor;
     } else if (currentlyPressedKeys[85]) {
         // u
-        rotatorY -= 0.2;
+        rotatorY -= rotationfactor;
     }
 
     if (currentlyPressedKeys[73]) {
         // i
-        rotatorZ += 0.2;
+        rotatorZ += rotationfactor;
     } else if (currentlyPressedKeys[79]) {
         // o
-        rotatorZ -= 0.2;
+        rotatorZ -= rotationfactor;
     }
 
 
 }
 
-function metoda() {
-    alert("dela");
-}
 
 var inputH = document.getElementById("inputH");
 var inputW = document.getElementById("inputW");
 var sliderH = document.getElementById("sliderH");
 var sliderW = document.getElementById("sliderW");
 
-//inputH.innerHTML = sliderH.value;
+inputH.innerHTML = sliderH.value;
 inputW.innerHTML = sliderW.value;
 
 sliderH.oninput = function() {
@@ -736,10 +863,15 @@ function start() {
             var newX = event.clientX;
             var newY = event.clientY;
 
-            yaw += (newX - lastMouseX) * 0.1;
+            if (! currentlyPressedKeys[17]) { // ctr
 
-            pitch += (newY - lastMouseY) * 0.1;
+                yaw += (newX - lastMouseX) * 0.1;
 
+                pitch += (newY - lastMouseY) * 0.1;
+            } else {
+                rotatorY -= (newX - lastMouseX) * 0.1;
+                rotatorX -= (newY - lastMouseY) * 0.1;
+            }
             lastMouseX = newX;
             lastMouseY = newY;
         };
@@ -812,24 +944,222 @@ function start() {
             currentObjectVertices = [
                 -1, 0, 0,
                 -1, 0, 1,
-                -1, 1, 0,
                 -1, 1, 1,
+                -1, 1, 0,
 
                 -1, 1, 0,
                 -1, 1, 1,
-                1, 1, 0,
                 1, 1, 1,
+                1, 1, 0,
 
                 1, 0, 0,
                 1, 0, 1,
+                1, 1, 1,
                 1, 1, 0,
-                1, 1, 1
+            ];
+            currentObjectTextureCoordinates = [
+                // left
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // top
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  2.0,
+                0.0,  2.0,
+                // Right
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+            ];
+
+            currentObjectIndices = [
+                0,  1,  2,      0,  2,  3,    // front
+                4,  5,  6,      4,  6,  7,    // back
+                8,  9,  10,     8,  10, 11,   // top
+            ];
+        };
+        document.getElementById("button2").onclick = function() { // cube
+            currentObjectVertices = [
+                // Front face
+                -1.0, -1.0,  1.0,
+                1.0, -1.0,  1.0,
+                1.0,  1.0,  1.0,
+                -1.0,  1.0,  1.0,
+
+                // Back face
+                -1.0, -1.0, -1.0,
+                -1.0,  1.0, -1.0,
+                1.0,  1.0, -1.0,
+                1.0, -1.0, -1.0,
+
+                // Top face
+                -1.0,  1.0, -1.0,
+                -1.0,  1.0,  1.0,
+                1.0,  1.0,  1.0,
+                1.0,  1.0, -1.0,
+
+                // Bottom face
+                -1.0, -1.0, -1.0,
+                1.0, -1.0, -1.0,
+                1.0, -1.0,  1.0,
+                -1.0, -1.0,  1.0,
+
+                // Right face
+                1.0, -1.0, -1.0,
+                1.0,  1.0, -1.0,
+                1.0,  1.0,  1.0,
+                1.0, -1.0,  1.0,
+
+                // Left face
+                -1.0, -1.0, -1.0,
+                -1.0, -1.0,  1.0,
+                -1.0,  1.0,  1.0,
+                -1.0,  1.0, -1.0
+            ];
+
+            currentObjectTextureCoordinates = [
+                // Front
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Back
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Top
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Bottom
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Right
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Left
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0
+            ];
+
+            currentObjectIndices = [
+                0,  1,  2,      0,  2,  3,    // front
+                4,  5,  6,      4,  6,  7,    // back
+                8,  9,  10,     8,  10, 11,   // top
+                12, 13, 14,     12, 14, 15,   // bottom
+                16, 17, 18,     16, 18, 19,   // right
+                20, 21, 22,     20, 22, 23    // left
             ];
         };
 
         document.getElementById("button12").onclick = function() {
-            currentObjectVertices = [];
+            currentObjectVertices = false;
         };
+
+
+        htmlX = document.getElementById("xCoor");
+        htmlX.onchange = function(event) {
+            xPosition = parseInt(htmlX.value);
+        };
+
+        htmlY = document.getElementById("yCoor");
+        htmlY.onchange = function(event) {
+            yPosition = parseInt(htmlY.value);
+        };
+
+        htmlZ = document.getElementById("zCoor");
+        htmlZ.onchange = function(event) {
+            zPosition = parseInt(htmlZ.value);
+        };
+
+        htmlYaw = document.getElementById("yaw");
+        htmlYaw.onchange = function(event) {
+            yaw = parseInt(htmlYaw.value);
+        };
+
+        htmlPitch = document.getElementById("pitch");
+        htmlPitch.onchange = function(event) {
+            yaw = parseInt(htmlPitch.value);
+        };
+
+        document.getElementById("xMinus").onclick = function(event) {
+            xPosition -= 1;
+        };
+
+        document.getElementById("xPlus").onclick = function(event) {
+            xPosition += 1;
+        };
+
+        document.getElementById("yMinus").onclick = function(event) {
+            yPosition -= 1;
+        };
+
+        document.getElementById("yPlus").onclick = function(event) {
+            yPosition += 1;
+        };
+
+        document.getElementById("zMinus").onclick = function(event) {
+            zPosition -= 1;
+        };
+
+        document.getElementById("zPlus").onclick = function(event) {
+            zPosition += 1;
+        };
+
+        document.getElementById("yawMinus").onclick = function(event) {
+            yaw -= 1;
+        };
+
+        document.getElementById("yawPlus").onclick = function(event) {
+            yaw += 1;
+        };
+
+        document.getElementById("pitchMinus").onclick = function(event) {
+            pitch -= 1;
+        };
+
+        document.getElementById("pitchPlus").onclick = function(event) {
+            pitch += 1;
+        };
+
+        var positiveDegrees = function(d) {
+            while (d < 0) {
+                d += 360;
+            }
+            return d % 360;
+        };
+
+        var numOfChars = 7;
+
+        setInterval(function() {
+            if (document.activeElement !== htmlPitch) {
+                htmlPitch.value = positiveDegrees(pitch).toString().slice(0, numOfChars);
+            }
+            if (document.activeElement !== htmlYaw) {
+                htmlYaw.value = positiveDegrees(yaw).toString().slice(0, numOfChars);
+            }
+            if (document.activeElement !== htmlX) {
+                htmlX.value = xPosition.toString().slice(0, numOfChars);
+            }
+            if (document.activeElement !== htmlY) {
+                htmlY.value = yPosition.toString().slice(0, numOfChars);
+            }
+            if (document.activeElement !== htmlZ) {
+                htmlZ.value = zPosition.toString().slice(0, numOfChars);
+            }
+        },
+            250)
     }
 }
 

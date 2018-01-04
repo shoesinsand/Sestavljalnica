@@ -1,13 +1,13 @@
 <html>
-	<head>
-		<title>Seminarska WebGL</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<link rel="stylesheet" href="./style/webgl.css" type="text/css">
-		<script type="text/javascript" src="./scripts/glMatrix-0.9.5.min.js"></script>
-		<script src="./scripts/script.js" type="text/javascript"></script>
+<head>
+	<title>Seminarska WebGL</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="./style/webgl.css" type="text/css">
+	<script type="text/javascript" src="./scripts/glMatrix-0.9.5.min.js"></script>
+	<script src="./scripts/script.js" type="text/javascript"></script>
 
-	    <!-- Fragment shader program -->
-	    <script id="shader-fs" type="x-shader/x-fragment">
+	<!-- Fragment shader program -->
+	<script id="shader-fs" type="x-shader/x-fragment">
 			precision mediump float;
 
 	    	// uniform attribute for setting texture coordinates
@@ -22,9 +22,9 @@
 			}
 	    </script>
 
-    
-	    <!-- Vertex shader program -->	    
-	    <script id="shader-vs" type="x-shader/x-vertex">
+
+	<!-- Vertex shader program -->
+	<script id="shader-vs" type="x-shader/x-vertex">
     		// atributes for setting vertex position and texture coordinates
 		    attribute vec3 aVertexPosition;
 		    attribute vec2 aTextureCoord;
@@ -42,66 +42,73 @@
 		        vTextureCoord = aTextureCoord;
 		    }
 		</script>
-	</head>
-	<body onload="start()">
-	<div id="title" style=""><h1>SESTAVLJALNICA</h1>
-		<div id="content">
-		
-			<br>
-		
-			<!-- Canvas -->
-			<canvas id="glcanvas" style="position: absolute; left: 150px" width="1280px" height="720px">
-				No <code>&lt;canvas&gt;</code> suppport in your browser.
-			</canvas>
-			
-			<!-- buttons -->
-			<input type="button" id="button1"  onClick="metoda()" style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1120px" value="test"/>
-			<input type="button" id="button2"  onClick="" style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1225px" value="test"/>
-			<input type="button" id="button3"  onClick="" style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1330px" value="test"/>
-			<input type="button" id="button4"  onClick="" style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1120px" value="test"/>
-			<input type="button" id="button5"  onClick="" style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1225px" value="test"/>
-			<input type="button" id="button6"  onClick="" style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1330px" value="test"/>
-			<input type="button" id="button7"  onClick="" style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1120px" value="test"/>
-			<input type="button" id="button8"  onClick="" style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1225px" value="test"/>
-			<input type="button" id="button9"  onClick="" style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1330px" value="test"/>
-			<input type="button" id="button10" onClick="" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1120px" value="test"/>
-			<input type="button" id="button11" onClick="" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1225px" value="test"/>
-			<input type="button" id="button12" onClick="" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1330px" value="test"/>
-			
-			<input type="image"id="hudBG" src="assets/wall.png" style="visibility: hidden; z-index:1; position:absolute; top:90px; left:1110px">
-			<h2 id="textH" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1125px">Height:</h2>
-			<input type="text" id="inputH" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1205px">
-			<input type="range" id="sliderH" min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1145px">
-			<h2 id="textW" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1285px">Width:</h2>
-			<input type="text" id="inputW" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1360px">
-			<input type="range" id="sliderW"min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1305px">
+</head>
+<body onload="start()">
+<div id="title" style=""><h1>SESTAVLJALNICA</h1>
+	<div id="content">
 
-    		<div id="loadingtext">Loading world...</div>
-			
+		<br>
 
-			<span id="controls" align="left" style="float: right; position: absolute; top: 290px; left: 1450px">
-				<h3>CONTROLS</h3>
-				<code>W</code> or <code>↑</code> - move forward <br>
-				<code>S</code> or <code>↓</code> - move backwards <br>
-				<code>A</code> or <code>←</code> - turn left <br>
-				<code>D</code> or <code>→</code> - turn right <br>
-				Drag mouse to look around<br>
-				<br><br>
-				<code>Shift</code> - run <br><br>
-				<code>Spacebar</code> - fly up <br>
-				<code>C</code> - fly down <br><br>
-				<code>Page Up</code> - look up <br>
-				<code>Page Down</code> - look down <br><br>
-				<code>Right click</code> - open menu<br>
-				<code>Enter</code> - Place object<br>
-				<code>R</code> and <code>T</code> - rotate Y<br>
-				<code>Z</code> and <code>U</code> - rotate X<br>
-				<code>I</code> and <code>O</code> - rotate Z<br>
-				<code>K</code> and <code>M</code> - move up and down<br>
-				<code>J</code> and <code>N</code> - move farther and closer<br>
-				<code>H</code> and <code>B</code> - bigger and smaller<br>
+		<!-- Canvas -->
+		<canvas id="glcanvas" width="1280px" height="720px">
+			No <code>&lt;canvas&gt;</code> suppport in your browser.
+		</canvas>
 
-			</span>
+		<!-- buttons -->
+		<input type="button" id="button1" style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1120px" value="test"/>
+		<input type="button" id="button2"  style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1225px" value="test"/>
+		<input type="button" id="button3"  style="visibility: hidden; z-index:2; position:absolute; top:100px; left:1330px" value="test"/>
+		<input type="button" id="button4"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1120px" value="test"/>
+		<input type="button" id="button5"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1225px" value="test"/>
+		<input type="button" id="button6"  style="visibility: hidden; z-index:2; position:absolute; top:205px; left:1330px" value="test"/>
+		<input type="button" id="button7"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1120px" value="test"/>
+		<input type="button" id="button8"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1225px" value="test"/>
+		<input type="button" id="button9"  style="visibility: hidden; z-index:2; position:absolute; top:310px; left:1330px" value="test"/>
+		<input type="button" id="button10" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1120px" value="test"/>
+		<input type="button" id="button11" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1225px" value="test"/>
+		<input type="button" id="button12" style="visibility: hidden; z-index:2; position:absolute; top:415px; left:1330px" value="test"/>
+
+		<input type="image"id="hudBG" src="assets/wall.png" style="visibility: hidden; z-index:1; position:absolute; top:90px; left:1110px">
+		<h2 id="textH" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1125px">Height:</h2>
+		<input type="text" id="inputH" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1205px">
+		<input type="range" id="sliderH" min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1145px">
+		<h2 id="textW" style="visibility: hidden; z-index:2; position:absolute; top:525px; left:1285px">Width:</h2>
+		<input type="text" id="inputW" style="visibility: hidden; z-index:2; position:absolute; top:535px; left:1360px">
+		<input type="range" id="sliderW"min="1" max="100" value="50" class="slider" style="visibility: hidden; z-index:2; position:absolute; top:575px; left:1305px">
+
+		<div id="loadingtext">Loading world...</div>
+
+				<span id="controls" align="left" style="float: right; margin: 20px">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X:&nbsp;<button id="xMinus">-</button>&nbsp;<input title="X: " type="number" id="xCoor" style="width: 10ch; border:none; outline:none;">&nbsp;<button id="xPlus">+</button>
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y:&nbsp;<button id="yMinus">-</button>&nbsp;<input title="Y: " type="number" id="yCoor" style="width: 10ch; border:none; outline:none;">&nbsp;<button id="yPlus">+</button>
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z:&nbsp;<button id="zMinus">-</button>&nbsp;<input title="Z: " type="number" id="zCoor" style="width: 10ch; border:none; outline:none;">&nbsp;<button id="zPlus">+</button>
+					<br>&nbsp;Yaw:&nbsp;<button id="yawMinus">-</button>&nbsp;<input title="°: " type="number" id="yaw" style="width: 9ch; border:none; outline:none;">°&nbsp;<button id="yawPlus">+</button>
+					<br>Pitch:&nbsp;<button id="pitchMinus">-</button>&nbsp;<input title="°: " type="number" id="pitch" style="width: 9ch; border:none; outline:none;">°&nbsp;<button id="pitchPlus">+</button>
+
+					<h3>CONTROLS</h3>
+					<code>W</code> or <code>↑</code> - move forward <br>
+					<code>S</code> or <code>↓</code> - move backwards <br>
+					<code>A</code> or <code>←</code> - turn left <br>
+					<code>D</code> or <code>→</code> - turn right <br>
+					Drag mouse to look around<br>
+					<br><br>
+					<code>Shift</code> - run <br><br>
+					<code>Spacebar</code> - fly up <br>
+					<code>C</code> - fly down <br><br>
+					<code>Page Up</code> - look up <br>
+					<code>Page Down</code> - look down <br><br>
+					<code>Right click</code> - open menu<br>
+					<code>Enter</code> - Place object<br>
+					<code>R</code> and <code>T</code> - rotate Y<br>
+					<code>Z</code> and <code>U</code> - rotate X<br>
+					<code>I</code> and <code>O</code> - rotate Z<br>
+					<code>K</code> and <code>M</code> - move up and down<br>
+					<code>J</code> and <code>N</code> - move farther and closer<br>
+					<code>H</code> and <code>B</code> - bigger and smaller<br>
+
+					CTRL + MouseDrag will rotate the object.
+				</span>
+			</div>
 		</div>
 	</body>
 </html>
