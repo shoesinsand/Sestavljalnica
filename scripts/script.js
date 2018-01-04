@@ -779,28 +779,33 @@ function handleKeys() {
         inSelectionObjectScale -= 0.01;
     }
 
+    var rotationfactor = 0.2;
+    if (currentlyPressedKeys[16]) {
+        rotationfactor = 0.6
+    }
+
     if (currentlyPressedKeys[82]) {
         // r
-        rotatorX += 0.2;
+        rotatorX += rotationfactor;
     } else if (currentlyPressedKeys[84]) {
         // t
-        rotatorX -= 0.2;
+        rotatorX -= rotationfactor;
     }
 
     if (currentlyPressedKeys[90]) {
         // z
-        rotatorY += 0.2;
+        rotatorY += rotationfactor;
     } else if (currentlyPressedKeys[85]) {
         // u
-        rotatorY -= 0.2;
+        rotatorY -= rotationfactor;
     }
 
     if (currentlyPressedKeys[73]) {
         // i
-        rotatorZ += 0.2;
+        rotatorZ += rotationfactor;
     } else if (currentlyPressedKeys[79]) {
         // o
-        rotatorZ -= 0.2;
+        rotatorZ -= rotationfactor;
     }
 
 
@@ -1065,27 +1070,27 @@ function start() {
 
         htmlX = document.getElementById("xCoor");
         htmlX.onchange = function(event) {
-            xPosition = htmlX.value;
+            xPosition = parseInt(htmlX.value);
         };
 
         htmlY = document.getElementById("yCoor");
         htmlY.onchange = function(event) {
-            yPosition = htmlY.value;
+            yPosition = parseInt(htmlY.value);
         };
 
         htmlZ = document.getElementById("zCoor");
         htmlZ.onchange = function(event) {
-            zPosition = htmlZ.value;
+            zPosition = parseInt(htmlZ.value);
         };
 
         htmlYaw = document.getElementById("yaw");
         htmlYaw.onchange = function(event) {
-            yaw = htmlYaw.value;
+            yaw = parseInt(htmlYaw.value);
         };
 
         htmlPitch = document.getElementById("pitch");
         htmlPitch.onchange = function(event) {
-            yaw = htmlPitch.value;
+            yaw = parseInt(htmlPitch.value);
         };
 
         document.getElementById("xMinus").onclick = function(event) {
@@ -1135,21 +1140,23 @@ function start() {
             return d % 360;
         };
 
+        var numOfChars = 7;
+
         setInterval(function() {
             if (document.activeElement !== htmlPitch) {
-                htmlPitch.value = positiveDegrees(pitch);
+                htmlPitch.value = positiveDegrees(pitch).toString().slice(0, numOfChars);
             }
             if (document.activeElement !== htmlYaw) {
-                htmlYaw.value = positiveDegrees(yaw);
+                htmlYaw.value = positiveDegrees(yaw).toString().slice(0, numOfChars);
             }
             if (document.activeElement !== htmlX) {
-                htmlX.value = xPosition;
+                htmlX.value = xPosition.toString().slice(0, numOfChars);
             }
             if (document.activeElement !== htmlY) {
-                htmlY.value = yPosition;
+                htmlY.value = yPosition.toString().slice(0, numOfChars);
             }
             if (document.activeElement !== htmlZ) {
-                htmlZ.value = zPosition;
+                htmlZ.value = zPosition.toString().slice(0, numOfChars);
             }
         },
             250)
