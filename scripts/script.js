@@ -231,6 +231,8 @@ function handleTextureLoaded(texture) {
 
     // when texture loading is finished we can draw scene.
     texturesLoaded = true;
+    currentObjectTexture = wallTexture;
+
 }
 
 //
@@ -359,11 +361,9 @@ function drawScene() {
 function drawObject(obj) {
     var vertexPositionBuffer = gl.createBuffer();
     var vertices = obj.vertices;
-    var x, y, z;
-    x = obj.xyz[0];
-    y = obj.xyz[1];
-    z = obj.xyz[2];
-
+    var texture = obj.texture;
+    var textureCoordinates = obj.textureCoordinates;
+    var vertexIndices = obj.vertexIndices;
 
     // Select the vertexPositionBuffer as the one to apply vertex
     // operations to from here out.
@@ -382,35 +382,123 @@ function drawObject(obj) {
     vertexPositionBuffer.itemSize = 3;
     vertexPositionBuffer.numItems = vertices.length / 3;
 
-    // TODO textures
-
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    var vertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+
+    // Pass the texture coordinates into WebGL
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
+    vertexTextureCoordBuffer.itemSize = 2;
+    vertexTextureCoordBuffer.numItems = textureCoordinates.length / vertexTextureCoordBuffer.itemSize;
+
+    // Set the texture coordinates attribute for the vertices.
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Specify the texture to map onto the faces.
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+    var VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
+
+    // Now send the element array to GL
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndices), gl.STATIC_DRAW);
+    VertexIndexBuffer.itemSize = 1;
+    VertexIndexBuffer.numItems = vertexIndices.length;
+
+
+    // Draw the cube.
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
     setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexPositionBuffer.numItems);
+    gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
 }
 
 var currentObjectVertices = [
-    -1, 0, 0,
-    -1, 0, 1,
-    -1, 1, 0,
-    -1, 1, 1,
+    // Front face
+    -1.0, -1.0,  1.0,
+    1.0, -1.0,  1.0,
+    1.0,  1.0,  1.0,
+    -1.0,  1.0,  1.0,
 
-    -1, 1, 0,
-    -1, 1, 1,
-    1, 1, 0,
-    1, 1, 1,
+    // Back face
+    -1.0, -1.0, -1.0,
+    -1.0,  1.0, -1.0,
+    1.0,  1.0, -1.0,
+    1.0, -1.0, -1.0,
 
-    1, 0, 0,
-    1, 0, 1,
-    1, 1, 0,
-    1, 1, 1
+    // Top face
+    -1.0,  1.0, -1.0,
+    -1.0,  1.0,  1.0,
+    1.0,  1.0,  1.0,
+    1.0,  1.0, -1.0,
+
+    // Bottom face
+    -1.0, -1.0, -1.0,
+    1.0, -1.0, -1.0,
+    1.0, -1.0,  1.0,
+    -1.0, -1.0,  1.0,
+
+    // Right face
+    1.0, -1.0, -1.0,
+    1.0,  1.0, -1.0,
+    1.0,  1.0,  1.0,
+    1.0, -1.0,  1.0,
+
+    // Left face
+    -1.0, -1.0, -1.0,
+    -1.0, -1.0,  1.0,
+    -1.0,  1.0,  1.0,
+    -1.0,  1.0, -1.0
 ];
 
-var currentObjectTexture = [
-    0, 1,
-    1, 0
+var currentObjectTextureCoordinates = [
+    // Front
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Back
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Top
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Bottom
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Right
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Left
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0
 ];
+
+var currentObjectIndices = [
+    0,  1,  2,      0,  2,  3,    // front
+    4,  5,  6,      4,  6,  7,    // back
+    8,  9,  10,     8,  10, 11,   // top
+    12, 13, 14,     12, 14, 15,   // bottom
+    16, 17, 18,     16, 18, 19,   // right
+    20, 21, 22,     20, 22, 23    // left
+];
+
+var currentObjectTexture;
 
 var rotatorX = 0;
 var rotatorY = 0;
@@ -448,9 +536,39 @@ function drawInSelection(vert) {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    var vertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+
+    // Pass the texture coordinates into WebGL
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(currentObjectTextureCoordinates), gl.STATIC_DRAW);
+    vertexTextureCoordBuffer.itemSize = 2;
+    vertexTextureCoordBuffer.numItems = currentObjectTextureCoordinates.length / vertexTextureCoordBuffer.itemSize;
+
+    // Set the texture coordinates attribute for the vertices.
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Specify the texture to map onto the faces.
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, currentObjectTexture);
+    gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+    var VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
+
+    // Now send the element array to GL
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(currentObjectIndices), gl.STATIC_DRAW);
+    VertexIndexBuffer.itemSize = 1;
+    VertexIndexBuffer.numItems = currentObjectIndices.length;
+
+
+    // Draw the cube.
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
     mat4.translate(mvMatrix, [0, -inSelectionObjectHeight, -inSelectionObjectDepth]);
+
     setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexPositionBuffer.numItems);
+    gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
 }
 
@@ -488,7 +606,7 @@ function newObject() {
         newVertices[i] += x;
     }
 
-    newObjects.push({"vertices":newVertices, "texture":currentObjectTexture, "id": newObjestCount++, "xyz":[x, y, z]});
+    newObjects.push({"vertices":newVertices, "vertexIndices": currentObjectIndices, "texture":currentObjectTexture, "textureCoordinates":currentObjectTextureCoordinates, "id": newObjestCount++, "xyz":[x, y, z]});
 
 }
 
@@ -821,57 +939,122 @@ function start() {
             currentObjectVertices = [
                 -1, 0, 0,
                 -1, 0, 1,
-                -1, 1, 0,
                 -1, 1, 1,
+                -1, 1, 0,
 
                 -1, 1, 0,
                 -1, 1, 1,
-                1, 1, 0,
                 1, 1, 1,
+                1, 1, 0,
 
                 1, 0, 0,
                 1, 0, 1,
+                1, 1, 1,
                 1, 1, 0,
-                1, 1, 1
+            ];
+            currentObjectTextureCoordinates = [
+                // left
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // top
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  2.0,
+                0.0,  2.0,
+                // Right
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+            ];
+
+            currentObjectIndices = [
+                0,  1,  2,      0,  2,  3,    // front
+                4,  5,  6,      4,  6,  7,    // back
+                8,  9,  10,     8,  10, 11,   // top
             ];
         };
         document.getElementById("button2").onclick = function() { // cube
             currentObjectVertices = [
-                -0.5, -0.5, -0.5,
-                -0.5, -0.5, 0.5,
-                -0.5, 0.5, -0.5,
-                -0.5, 0.5, 0.5,
+                // Front face
+                -1.0, -1.0,  1.0,
+                1.0, -1.0,  1.0,
+                1.0,  1.0,  1.0,
+                -1.0,  1.0,  1.0,
 
-                -0.5, 0.5, -0.5,
-                -0.5, 0.5, 0.5,
-                0.5, 0.5, -0.5,
-                0.5, 0.5, 0.5,
+                // Back face
+                -1.0, -1.0, -1.0,
+                -1.0,  1.0, -1.0,
+                1.0,  1.0, -1.0,
+                1.0, -1.0, -1.0,
 
-                0.5, -0.5, -0.5,
-                0.5, -0.5, 0.5,
-                0.5, 0.5, -0.5,
-                0.5, 0.5, 0.5,
+                // Top face
+                -1.0,  1.0, -1.0,
+                -1.0,  1.0,  1.0,
+                1.0,  1.0,  1.0,
+                1.0,  1.0, -1.0,
 
-                -0.5, 0.5, -0.5,
-                -0.5, 0.5, 0.5,
-                0.5, 0.5, -0.5,
-                0.5, 0.5, 0.5,
+                // Bottom face
+                -1.0, -1.0, -1.0,
+                1.0, -1.0, -1.0,
+                1.0, -1.0,  1.0,
+                -1.0, -1.0,  1.0,
 
-                0.5, -0.5, -0.5,
-                0.5, -0.5, 0.5,
-                -0.5, -0.5, -0.5,
-                -0.5, -0.5, 0.5,
+                // Right face
+                1.0, -1.0, -1.0,
+                1.0,  1.0, -1.0,
+                1.0,  1.0,  1.0,
+                1.0, -1.0,  1.0,
 
-                0.5, -0.5, -0.5,
-                -0.5, -0.5, -0.5,
-                0.5, 0.5, -0.5,
-                -0.5, 0.5, -0.5,
+                // Left face
+                -1.0, -1.0, -1.0,
+                -1.0, -1.0,  1.0,
+                -1.0,  1.0,  1.0,
+                -1.0,  1.0, -1.0
+            ];
 
-                0.5, -0.5, 0.5,
-                -0.5, -0.5, 0.5,
-                0.5, 0.5, 0.5,
-                -0.5, 0.5, 0.5,
+            currentObjectTextureCoordinates = [
+                // Front
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Back
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Top
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Bottom
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Right
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Left
+                0.0,  0.0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0
+            ];
 
+            currentObjectIndices = [
+                0,  1,  2,      0,  2,  3,    // front
+                4,  5,  6,      4,  6,  7,    // back
+                8,  9,  10,     8,  10, 11,   // top
+                12, 13, 14,     12, 14, 15,   // bottom
+                16, 17, 18,     16, 18, 19,   // right
+                20, 21, 22,     20, 22, 23    // left
             ];
         };
 
