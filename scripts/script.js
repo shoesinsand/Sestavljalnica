@@ -212,7 +212,7 @@ function setMatrixUniforms() {
 
 var texturesArray;
 function initTextures() {
-    texturesArray = [false, false, false, false];
+    texturesArray = [false, false, false, false, false, false, false, false, false, false, false, false, false, false];
 
     var grass = gl.createTexture();
     grass.image = new Image();
@@ -220,32 +220,112 @@ function initTextures() {
         handleTextureLoaded(grass);
         texturesArray[0] = grass;
     };
-    grass.image.src = "assets/grass.png";
+    grass.image.src = "assets/textures/1grass.jpg";
 
-    var wallTexture = gl.createTexture();
-    wallTexture.image = new Image();
-    wallTexture.image.onload = function () {
-        handleTextureLoaded(wallTexture);
-        texturesArray[1] = wallTexture;
+	var wall1 = gl.createTexture();
+    wall1.image = new Image();
+    wall1.image.onload = function () {
+        handleTextureLoaded(wall1);
+        texturesArray[1] = wall1;
     };
-    wallTexture.image.src = "assets/wall.png";
-
-    var ara = gl.createTexture();
-    ara.image = new Image();
-    ara.image.onload = function () {
-        handleTextureLoaded(ara);
-        texturesArray[2] = ara;
+    wall1.image.src = "assets/textures/2wall.jpg";
+	
+    var wall2 = gl.createTexture();
+    wall2.image = new Image();
+    wall2.image.onload = function () {
+        handleTextureLoaded(wall2);
+        texturesArray[2] = wall2;
     };
-    ara.image.src = "assets/ara.png";
+    wall2.image.src = "assets/textures/3wall.jpg";
 
-    var crate = gl.createTexture();
+    var wood1 = gl.createTexture();
+    wood1.image = new Image();
+    wood1.image.onload = function () {
+        handleTextureLoaded(wood1);
+        texturesArray[3] = wood1;
+    };
+    wood1.image.src = "assets/textures/4wood.jpg";
+
+    var wood2 = gl.createTexture();
+    wood2.image = new Image();
+    wood2.image.onload = function () {
+        handleTextureLoaded(wood2);
+        texturesArray[4] = wood2;
+    };
+    wood2.image.src = "assets/textures/5wood.jpg";
+
+	var crate = gl.createTexture();
     crate.image = new Image();
     crate.image.onload = function () {
         handleTextureLoaded(crate);
-        texturesArray[3] = crate;
+        texturesArray[5] = crate;
     };
-    crate.image.src = "assets/crate.gif";
-
+    crate.image.src = "assets/textures/6crate.jpg";
+	
+	var glass = gl.createTexture();
+    glass.image = new Image();
+    glass.image.onload = function () {
+        handleTextureLoaded(glass);
+        texturesArray[6] = glass;
+    };
+    glass.image.src = "assets/textures/7glass.jpg";
+	
+	var sand = gl.createTexture();
+    sand.image = new Image();
+    sand.image.onload = function () {
+        handleTextureLoaded(sand);
+        texturesArray[7] = sand;
+    };
+    sand.image.src = "assets/textures/8sand.jpg";
+	
+	var concrete = gl.createTexture();
+    concrete.image = new Image();
+    concrete.image.onload = function () {
+        handleTextureLoaded(concrete);
+        texturesArray[8] = concrete;
+    };
+    concrete.image.src = "assets/textures/9concrete.jpg";
+	
+	var cardboard = gl.createTexture();
+    cardboard.image = new Image();
+    cardboard.image.onload = function () {
+        handleTextureLoaded(cardboard);
+        texturesArray[9] = cardboard;
+    };
+    cardboard.image.src = "assets/textures/10cardboard.jpg";
+	
+	var pavement = gl.createTexture();
+    pavement.image = new Image();
+    pavement.image.onload = function () {
+        handleTextureLoaded(pavement);
+        texturesArray[10] = pavement;
+    };
+    pavement.image.src = "assets/textures/11pavement.jpg";
+	
+	var asphalt = gl.createTexture();
+    asphalt.image = new Image();
+    asphalt.image.onload = function () {
+        handleTextureLoaded(asphalt);
+        texturesArray[11] = asphalt;
+    };
+    asphalt.image.src = "assets/textures/12asphalt.jpg";
+		
+	var window1= gl.createTexture();
+    window1.image = new Image();
+    window1.image.onload = function () {
+        handleTextureLoaded(window1);
+        texturesArray[12] = window1;
+    };
+    window1.image.src = "assets/textures/13window.jpg";
+		
+	var ara = gl.createTexture();
+    ara.image = new Image();
+    ara.image.onload = function () {
+        handleTextureLoaded(ara);
+        texturesArray[13] = ara;
+    };
+    ara.image.src = "assets/textures/14ara.jpg";
+	
     checkTextures();
 }
 
@@ -320,7 +400,6 @@ function handleLoadedWorld(data) {
     worldVertexTextureCoordBuffer.itemSize = 2;
     worldVertexTextureCoordBuffer.numItems = vertexCount;
 
-    document.getElementById("loadingtext").textContent = "";
 }
 
 //
@@ -855,24 +934,6 @@ function handleKeys() {
 }
 
 
-var inputH = document.getElementById("inputH");
-var inputW = document.getElementById("inputW");
-var sliderH = document.getElementById("sliderH");
-var sliderW = document.getElementById("sliderW");
-
-inputH.innerHTML = sliderH.value;
-inputW.innerHTML = sliderW.value;
-
-sliderH.oninput = function() {
-    inputH.innerHTML = this.value;
-};
-sliderW.oninput = function() {
-    inputW.innerHTML = this.value;
-};
-inputH.oninput = function(){
-    alert("kebab!");
-};
-
 //
 // start
 //
@@ -891,6 +952,9 @@ function start() {
         gl.enable(gl.DEPTH_TEST);                               // Enable depth testing
         gl.depthFunc(gl.LEQUAL);                                // Near things obscure far things
 
+		//hiding the potential object from the beginning
+		currentObjectVertices = false;
+		
         //variable for checking if buttons are visible or not
         var hud = false;
 
@@ -906,7 +970,7 @@ function start() {
             var newX = event.clientX;
             var newY = event.clientY;
 
-            if (! currentlyPressedKeys[17]) { // ctr
+            if (! currentlyPressedKeys[17]) { // ctrl
 
                 yaw += (newX - lastMouseX) * 0.1;
 
@@ -928,31 +992,21 @@ function start() {
 
             if (e.which === 3){
                 if (hud === true){
-                    for (var i = 1; i < 13; i++) {
+                    for (var i = 1; i < 10; i++) {
                         document.getElementById("button"+i).style.visibility="hidden";
                     }
-                    document.getElementById("sliderH").style.visibility="hidden";
-                    document.getElementById("sliderW").style.visibility="hidden";
-                    document.getElementById("inputH").style.visibility="hidden";
-                    document.getElementById("inputW").style.visibility="hidden";
-                    document.getElementById("textH").style.visibility="hidden";
-                    document.getElementById("textW").style.visibility="hidden";
                     document.getElementById("hudBG").style.visibility="hidden";
+					document.getElementById("cancelSelection").style.visibility="hidden";
                     document.getElementById("changeObjectTexture").style.visibility="hidden";
                     document.getElementById("changeWorldTexture").style.visibility="hidden";
                     hud = false;
                 }
                 else {
-                    for (var i = 1; i < 13; i++) {
+                    for (var i = 1; i < 10; i++) {
                         document.getElementById("button"+i).style.visibility="visible";
                     }
-                    document.getElementById("sliderH").style.visibility="visible";
-                    document.getElementById("sliderW").style.visibility="visible";
-                    document.getElementById("inputH").style.visibility="visible";
-                    document.getElementById("inputW").style.visibility="visible";
-                    document.getElementById("textH").style.visibility="visible";
-                    document.getElementById("textW").style.visibility="visible";
                     document.getElementById("hudBG").style.visibility="visible";
+					document.getElementById("cancelSelection").style.visibility="visible";
                     document.getElementById("changeObjectTexture").style.visibility="visible";
                     document.getElementById("changeWorldTexture").style.visibility="visible";
                     hud = true;
@@ -1111,7 +1165,7 @@ function start() {
             ];
         };
 
-        document.getElementById("button12").onclick = function() {
+        document.getElementById("cancelSelection").onclick = function() {
             currentObjectVertices = false;
         };
 
@@ -1210,7 +1264,7 @@ function start() {
             250);
 
         document.getElementById("changeObjectTexture").onclick = function(event) {
-            objectTexture++;
+            objectTexture++; 
         };
         document.getElementById("changeWorldTexture").onclick = function(event) {
             worldTexture++;
