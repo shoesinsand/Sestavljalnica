@@ -260,7 +260,7 @@ function checkTextures() {
     if (done) {
         texturesLoaded = true;
     } else {
-        setInterval(checkTextures, 100);
+        setTimeout(checkTextures, 100);
     }
 }
 
