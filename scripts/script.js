@@ -580,7 +580,7 @@ var currentObjectVertices = [
 
 var currentObjectTextureCoordinates = [
     // Front
-    0.0,  0.0,
+    1.0,  0.0,
     1.0,  0.0,
     1.0,  1.0,
     0.0,  1.0,
@@ -1041,7 +1041,7 @@ function start() {
             }
         }, 15);
 
-        document.getElementById("button1").onclick = function() {
+        document.getElementById("button7").onclick = function() { //bridge
             currentObjectVertices = [
                 -1, 0, 0,
                 -1, 0, 1,
@@ -1082,7 +1082,7 @@ function start() {
                 8,  9,  10,     8,  10, 11,   // top
             ];
         };
-        document.getElementById("button2").onclick = function() { // cube
+        document.getElementById("button5").onclick = function() { // cube
             currentObjectVertices = [
                 // Front face
                 -1.0, -1.0,  1.0,
