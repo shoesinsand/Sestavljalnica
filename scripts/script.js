@@ -28,6 +28,7 @@ var xPosition = 0;
 var yPosition = 0.4;
 var zPosition = 0;
 var speed = 0;
+var horizontalSpeed = 0;
 var flying = 0;
 
 var objectTexture = 1;
@@ -434,38 +435,26 @@ function drawScene() {
         return;
     }
 
-    // Establish the perspective with which we want to view the
-    // scene. Our field of view is 45 degrees, with a width/height
-    // ratio of 640:480, and we only want to see objects between 0.1 units
-    // and 100 units away from the camera.
     mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 
-
-    // Set the drawing position to the "identity" point, which is
-    // the center of the scene.
     mat4.identity(mvMatrix);
 
-    // Now move the drawing position a bit to where we want to start
-    // drawing the world.
     mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
     mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
+    //rotateView(mvMatrix);
+
     mat4.translate(mvMatrix, [-xPosition, -yPosition, -zPosition]);
 
-    // Activate textures
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texturesArray[worldTexture%texturesArray.length]);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
-    // Set the texture coordinates attribute for the vertices.
     gl.bindBuffer(gl.ARRAY_BUFFER, worldVertexTextureCoordBuffer);
     gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, worldVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    // Draw the world by binding the array buffer to the world's vertices
-    // array, setting attributes, and pushing it to GL.
     gl.bindBuffer(gl.ARRAY_BUFFER, worldVertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, worldVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    // Draw the cube.
     setMatrixUniforms();
     gl.drawArrays(gl.TRIANGLES, 0, worldVertexPositionBuffer.numItems);
 
@@ -474,70 +463,60 @@ function drawScene() {
     if (currentObjectVertices) {
         drawInSelection(currentObjectVertices);
     }
+    mat4.identity(mvMatrix);
+
+    mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
+    mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
+    //rotateView(mvMatrix);
+
+    mat4.translate(mvMatrix, [-xPosition, -yPosition, -zPosition]);
+
+
+    setMatrixUniforms();
     for (var i = 0; i < newObjects.length; i++) {
         drawObject(newObjects[i]);
     }
 
+    xyzCalculated = false;
+
 }
 
 function drawObject(obj) {
-    var vertexPositionBuffer = gl.createBuffer();
-    var vertices = obj.vertices;
+    var verticesBuffer = obj.verticesBuffer;
     var texture = obj.texture;
-    var textureCoordinates = obj.textureCoordinates;
-    var vertexIndices = obj.vertexIndices;
+    var textureCoordinatesBuffer = obj.textureCoordinatesBuffer;
+    var vertexIndicesBuffer = obj.vertexIndicesBuffer;
 
-    // Select the vertexPositionBuffer as the one to apply vertex
-    // operations to from here out.
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, verticesBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    // Set the drawing position to the "identity" point, which is
-    // the center of the scene.
-    mat4.identity(mvMatrix);
-    mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
-    mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
-    mat4.translate(mvMatrix, [-xPosition, -yPosition, -zPosition]);
-    // Now pass the list of vertices into WebGL to build the shape. We
-    // do this by creating a Float32Array from the JavaScript array,
-    // then use it to fill the current vertex buffer.
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    vertexPositionBuffer.itemSize = 3;
-    vertexPositionBuffer.numItems = vertices.length / 3;
+    gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordinatesBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, textureCoordinatesBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    var vertexTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
-
-    // Pass the texture coordinates into WebGL
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
-    vertexTextureCoordBuffer.itemSize = 2;
-    vertexTextureCoordBuffer.numItems = textureCoordinates.length / vertexTextureCoordBuffer.itemSize;
-
-    // Set the texture coordinates attribute for the vertices.
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    // Specify the texture to map onto the faces.
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
-    var VertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
-
-    // Now send the element array to GL
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndices), gl.STATIC_DRAW);
-    VertexIndexBuffer.itemSize = 1;
-    VertexIndexBuffer.numItems = vertexIndices.length;
-
-
-    // Draw the cube.
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
-    setMatrixUniforms();
-    gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndicesBuffer);
+    gl.drawElements(gl.TRIANGLES, vertexIndicesBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+}
+var mouseMoveX = 0;
+var mouseMoveY = 0;
+var xyzCalculated = false;
+var dx;
+var dz;
+var dy;
+function rotateView(matrix) {
+    if (!xyzCalculated) {
+        xyzCalculated = true;
+        dx = Math.sin(degToRad(yaw)) * inSelectionObjectDepth * Math.cos(degToRad(pitch));
+        dz = Math.cos(degToRad(yaw)) * inSelectionObjectDepth * Math.cos(degToRad(pitch));
+        dy = Math.sin(degToRad(pitch)) * inSelectionObjectDepth;
+    }
+    mat4.translate(matrix, [-dx ,-dy, -dz]);
+    mat4.rotate(matrix, mouseMoveX*0.01, [0, 1, 0]);
+    mat4.rotate(matrix, mouseMoveY*0.01, [1, 0, 0]);
+    mat4.translate(matrix, [dx ,dy, dz]);
 }
 
 var currentObjectVertices = [
@@ -640,11 +619,14 @@ function drawInSelection(vert) {
     // the center of the scene.
     mat4.identity(mvMatrix);
 
+
     var matrika = new Float32Array(16);
     mat4.identity(matrika);
     mat4.rotate(matrika, degToRad(-rotatorX), [1, 0, 0]);
     mat4.rotate(matrika, degToRad(-rotatorY), [0, 1, 0]);
     mat4.rotate(matrika, degToRad(-rotatorZ), [0, 0, 1]);
+    //rotateView(mvMatrix);
+
     mat4.scale(matrika, [inSelectionObjectScale, inSelectionObjectScale, inSelectionObjectScale]);
 
 
@@ -728,7 +710,25 @@ function newObject() {
         newVertices[i] += x;
     }
 
-    newObjects.push({"vertices":newVertices, "vertexIndices": currentObjectIndices, "texture":texturesArray[objectTexture%texturesArray.length], "textureCoordinates":currentObjectTextureCoordinates, "id": newObjestCount++, "xyz":[x, y, z]});
+    var vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(newVertices), gl.STATIC_DRAW);
+    vertexBuffer.itemSize = 3;
+    vertexBuffer.numItems = newVertices.length / 3;
+
+    var textureBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(currentObjectTextureCoordinates), gl.STATIC_DRAW);
+    textureBuffer.itemSize = 2;
+    textureBuffer.numItems = currentObjectTextureCoordinates.length / textureBuffer.itemSize;
+
+    var VertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(currentObjectIndices), gl.STATIC_DRAW);
+    VertexIndexBuffer.itemSize = 1;
+    VertexIndexBuffer.numItems = currentObjectIndices.length;
+
+    newObjects.push({"vertexIndicesBuffer":VertexIndexBuffer, "textureCoordinatesBuffer":textureBuffer, "verticesBuffer":vertexBuffer, "vertices":newVertices, "vertexIndices": currentObjectIndices, "texture":texturesArray[objectTexture%texturesArray.length], "textureCoordinates":currentObjectTextureCoordinates, "id": newObjestCount++, "xyz":[x, y, z]});
 
 }
 
@@ -779,6 +779,12 @@ function animate() {
             xPosition -= Math.sin(degToRad(yaw)) * speed * elapsed;
             zPosition -= Math.cos(degToRad(yaw)) * speed * elapsed;
         }
+
+        if (horizontalSpeed !== 0) {
+            xPosition -= Math.sin(degToRad(yaw + 90)) * horizontalSpeed * elapsed;
+            zPosition -= Math.cos(degToRad(yaw + 90)) * horizontalSpeed * elapsed;
+        }
+
         if (yPosition >= 0.4){
             yPosition += flying * elapsed / 20 * 0.4;
         }
@@ -833,12 +839,12 @@ function handleKeys() {
 
     if (currentlyPressedKeys[37] || currentlyPressedKeys[65]) {
         // Left cursor key or A
-        yawRate = 0.1;
+        horizontalSpeed = 0.003;
     } else if (currentlyPressedKeys[39] || currentlyPressedKeys[68]) {
         // Right cursor key or D
-        yawRate = -0.1;
+        horizontalSpeed = -0.003;
     } else {
-        yawRate = 0;
+        horizontalSpeed = 0;
     }
 
     // Spacebar
@@ -902,7 +908,7 @@ function handleKeys() {
     }
 
     var rotationfactor = 0.2;
-    if (currentlyPressedKeys[16]) {
+    if (currentlyPressedKeys[16]) { // shift
         rotationfactor = 0.6
     }
 
@@ -970,14 +976,15 @@ function start() {
             var newX = event.clientX;
             var newY = event.clientY;
 
-            if (! currentlyPressedKeys[17]) { // ctrl
-
-                yaw += (newX - lastMouseX) * 0.1;
-
-                pitch += (newY - lastMouseY) * 0.1;
-            } else {
+            if (currentlyPressedKeys[17]) { // ctrl
                 rotatorY -= (newX - lastMouseX) * 0.1;
                 rotatorX -= (newY - lastMouseY) * 0.1;
+            } else if (currentlyPressedKeys[81]) { // q
+                mouseMoveX += (newX - lastMouseX) * 0.1;
+                mouseMoveY += (newY - lastMouseY) * 0.1;
+            } else {
+                yaw += (newX - lastMouseX) * 0.1;
+                pitch += (newY - lastMouseY) * 0.1;
             }
             lastMouseX = newX;
             lastMouseY = newY;
