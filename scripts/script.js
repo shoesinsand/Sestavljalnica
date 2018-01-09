@@ -953,7 +953,7 @@ function start() {
 
     // Only continue if WebGL is available and working
     if (gl) {
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);                      // Set clear color to black, fully opaque
+        gl.clearColor(0.8, 1.0, 1.0, 1.0);                      // Set clear color to black, fully opaque
         gl.clearDepth(1.0);                                     // Clear everything
         gl.enable(gl.DEPTH_TEST);                               // Enable depth testing
         gl.depthFunc(gl.LEQUAL);                                // Near things obscure far things
@@ -1052,7 +1052,9 @@ function start() {
             }
         }, 15);
 
-        document.getElementById("button1").onclick = function() { // square
+      
+
+      document.getElementById("button1").onclick = function() { // square
             currentObjectVertices = [
                 // Front face
                 -0.4, -0.4, 0.0,
@@ -1118,7 +1120,10 @@ function start() {
 
         };
 
-        document.getElementById("button4").onclick = function() { // panel
+        
+          
+		
+		document.getElementById("button4").onclick = function() { // panel
             currentObjectVertices = [
                 // Front face
                 -1.0, -1.0, -0.9,
@@ -1200,7 +1205,9 @@ function start() {
                 20, 21, 22,     20, 22, 23    // left
             ];
         };
+		
 
+          
         document.getElementById("button5").onclick = function() { // cube
             currentObjectVertices = [
                 // Front face
@@ -1283,61 +1290,70 @@ function start() {
                 20, 21, 22,     20, 22, 23    // left
             ];
         };
-
-        document.getElementById("button6").onclick = function() { // pyramid
+		
+		document.getElementById("button6").onclick = function() { // pyramid
             currentObjectVertices = [
                 // Front face
-                0.0, 1.0, 0,
-                -1.0, -1.0,  1.0,
-                1.0, -1.0, 1.0,
-                // left face
-                0.0, 1.0, 0,
-                -1.0, -1.0,  1.0,
-                -1.0, -1.0, -1.0,
-                // back face
-                0.0, 1.0, 0,
-                -1.0, -1.0, -1.0,
-                1.0, -1.0,  -1.0,
-                // right face
-                0.0, 1.0, 0,
-                1.0, -1.0, -1.0,
-                1.0, -1.0, 1.0,
-                // bottom faces
-                1.0, -1.0,  1.0,
-                1.0, -1.0, -1.0,
-                -1.0, -1.0, -1.0,
-                1.0, -1.0,  1.0,
-                -1.0, -1.0, 1.0,
-                -1.0, -1.0, -1.0,
+                -1.0, 0.0, 0.0,
+                 1.0, 0.0,  0.0,
+                 0.0, 1.5, -0.5,
+
+                // Back face
+                -1.0, 0.0, -1.0,
+                 1.0, 0.0, -1.0,
+                 0.0, 1.5, -0.5,
+
+                // Bottom face
+                -1.0, 0.0,  0.0,
+                 1.0, 0.0,  0.0,
+                -1.0, 0.0, -1.0,
+                 1.0, 0.0, -1.0,
+
+                // Right face
+                1.0, 0.0,  1.0,
+                1.0, 0.0, -1.0,
+                0.0, 1.5, -0.5,
+
+                // Left face
+                -1.0, 0.0,  1.0,
+                -1.0, 0.0, -1.0,
+                 0.0, 1.5, -0.5,
             ];
 
             currentObjectTextureCoordinates = [
                 // Front
-                0.5, 1,
-                1,  0,
                 0.0,  0.0,
-                0.5, 1,
-                1,  0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Back
                 0.0,  0.0,
-                0.5, 1,
-                1,  0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Bottom
                 0.0,  0.0,
-                0.5, 1,
-                1,  0,
+                1.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Right
                 0.0,  0.0,
-                // bottom
-                1, 1,
-                1,  0,
-                0,  0,
-                1, 1,
-                0,  1,
-                0,  0,
+                1.0,  1.0,
+                0.0,  1.0,
+                // Left
+                0.0,  0.0,
+                1.0,  1.0,
+                0.0,  1.0
             ];
 
             currentObjectIndices = [
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
+                0,  1,  2,    // front
+                4,  5,  6,    // back
+                8,  9,  10,     8, 10, 11,   // bottom
+                12, 13, 14,   // right
+                16, 17, 18,   // left
             ];
         };
+		
+
 
         document.getElementById("button7").onclick = function() { //bridge
             currentObjectVertices = [
