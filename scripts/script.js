@@ -25,7 +25,7 @@ var pitchRate = 0;
 var yaw = 0;
 var yawRate = 0;
 var xPosition = 0;
-var yPosition = 0.5;
+var yPosition = 0.4;
 var zPosition = 0;
 var speed = 0;
 var horizontalSpeed = 0;
@@ -319,13 +319,13 @@ function initTextures() {
     };
     window1.image.src = "assets/textures/13window.jpg";
 		
-	var ara = gl.createTexture();
-    ara.image = new Image();
-    ara.image.onload = function () {
-        handleTextureLoaded(ara);
-        texturesArray[13] = ara;
+	var door = gl.createTexture();
+    door.image = new Image();
+    door.image.onload = function () {
+        handleTextureLoaded(door);
+        texturesArray[13] = door;
     };
-    ara.image.src = "assets/textures/14ara.jpg";
+    door.image.src = "assets/textures/14door.jpg";
 	
     checkTextures();
 }
@@ -514,8 +514,8 @@ function rotateView(matrix) {
         dy = Math.sin(degToRad(pitch)) * inSelectionObjectDepth;
     }
     mat4.translate(matrix, [-dx ,-dy, -dz]);
-    mat4.rotate(matrix, degToRad(mouseMoveY), [1, 0, 0]);
-    mat4.rotate(matrix, degToRad(mouseMoveX), [0, 1, 0]);
+    mat4.rotate(matrix, mouseMoveX*0.01, [0, 1, 0]);
+    mat4.rotate(matrix, mouseMoveY*0.01, [1, 0, 0]);
     mat4.translate(matrix, [dx ,dy, dz]);
 }
 
@@ -606,7 +606,7 @@ var rotatorY = 0;
 var rotatorZ = 0;
 var inSelectionObjectDepth = 4;
 var inSelectionObjectHeight = 0;
-var inSelectionObjectScale = 0.5;
+var inSelectionObjectScale = 1;
 function drawInSelection(vert) {
 
     var vertices = new Float32Array(vert);
@@ -625,6 +625,7 @@ function drawInSelection(vert) {
     mat4.rotate(matrika, degToRad(-rotatorX), [1, 0, 0]);
     mat4.rotate(matrika, degToRad(-rotatorY), [0, 1, 0]);
     mat4.rotate(matrika, degToRad(-rotatorZ), [0, 0, 1]);
+    //rotateView(mvMatrix);
 
     mat4.scale(matrika, [inSelectionObjectScale, inSelectionObjectScale, inSelectionObjectScale]);
 
@@ -691,7 +692,6 @@ function newObject() {
     var matrix = mat4.identity(new Float32Array(16));
     mat4.rotate(matrix, degToRad(yaw), [0, 1, 0]);
     mat4.rotate(matrix, degToRad(pitch), [1, 0, 0]);
-
     mat4.rotate(matrix, degToRad(-rotatorX), [1, 0, 0]);
     mat4.rotate(matrix, degToRad(-rotatorY), [0, 1, 0]);
     mat4.rotate(matrix, degToRad(-rotatorZ), [0, 0, 1]);
@@ -785,8 +785,8 @@ function animate() {
             zPosition -= Math.cos(degToRad(yaw + 90)) * horizontalSpeed * elapsed;
         }
 
-        if (yPosition >= 0.5){
-            yPosition += flying * elapsed / 20 * 0.5;
+        if (yPosition >= 0.4){
+            yPosition += flying * elapsed / 20 * 0.4;
         }
 
         yaw += yawRate * elapsed;
@@ -853,7 +853,7 @@ function handleKeys() {
     }
     //Ctrl
     else if (currentlyPressedKeys[67]){
-        if (yPosition < 0.5){
+        if (yPosition < 0.419){
             flying = -0.000000000000000000000000005;
         }
         else{
@@ -980,13 +980,9 @@ function start() {
                 rotatorY -= (newX - lastMouseX) * 0.1;
                 rotatorX -= (newY - lastMouseY) * 0.1;
             } else if (currentlyPressedKeys[81]) { // q
-                //yaw = 0;
-                //pitch = 0;
                 mouseMoveX += (newX - lastMouseX) * 0.1;
                 mouseMoveY += (newY - lastMouseY) * 0.1;
             } else {
-                //mouseMoveX = 0;
-                //mouseMoveY = 0;
                 yaw += (newX - lastMouseX) * 0.1;
                 pitch += (newY - lastMouseY) * 0.1;
             }
@@ -1052,15 +1048,13 @@ function start() {
             }
         }, 15);
 
-
-
         document.getElementById("button1").onclick = function() { // square
             currentObjectVertices = [
                 // Front face
-                -0.4, -0.4, 0.0,
-                0.8, -0.4,  0.0,
-                0.8,  0.8,  0.0,
-                -0.4,  0.8,  0.0,
+                -0.8, -0.4, 0.0,
+                 0.8, -0.4, 0.0,
+                 0.8,  1.2, 0.0,
+                -0.8,  1.2, 0.0,
 
             ];
 
@@ -1070,42 +1064,42 @@ function start() {
                 1.0,  0.0,
                 1.0,  1.0,
                 0.0,  1.0,
-
+               
             ];
 
             currentObjectIndices = [
                 0,  1,  2,      0,  2,  3,    // front
             ];
         };
-
-        document.getElementById("button2").onclick = function() { // triangle
+		
+		document.getElementById("button2").onclick = function() { // triangle
             currentObjectVertices = [
                 // Front face
-                -1.0, 0.0, 0.0,
-                1.0, 0.0,  0.0,
-                0.0, 1.4,  0.0
+                -1.0, -0.4, 0.0,
+                1.0,  -0.4,  0.0,
+                0.0,   1.2, 0.0
             ];
 
             currentObjectTextureCoordinates = [
                 // Front
                 0.0,  0.0,
-                1.0,  0.0,
-                1.0,  1.0
+                1.0,  0.0, 
+				1.0,  1.0				
             ];
 
             currentObjectIndices = [
                 0,  1,  2,     // front
             ];
         };
-
-        document.getElementById("button3").onclick = function() { // triangle
+		
+		document.getElementById("button3").onclick = function() { // circle
             currentObjectVertices = [0,0,0];
             currentObjectIndices = [];
             currentObjectTextureCoordinates = [0.5,0.5];
             var smoothness = 120;
-            for (var i = 0; i <= smoothness + 2; i++){
-                var x = Math.cos(i*2*Math.PI/smoothness);
-                var y = Math.sin(i*2*Math.PI/smoothness);
+            for (var i = 0; i <= smoothness + 1; i++){
+                var x = 0.78*Math.cos(i*2*Math.PI/smoothness);
+                var y = 0.8*Math.sin(i*2*Math.PI/smoothness) + 0.4;
                 currentObjectVertices.push(x);
                 currentObjectVertices.push(y);
                 currentObjectVertices.push(0);
@@ -1119,45 +1113,45 @@ function start() {
             currentObjectIndices.pop();
 
         };
-
+		
         document.getElementById("button4").onclick = function() { // panel
             currentObjectVertices = [
                 // Front face
-                -1.0, -1.0, 0.05,
-                1.0, -1.0,  0.05,
-                1.0,  1.0,  0.05,
-                -1.0,  1.0, 0.05,
+                -0.5, -0.4, 0.0,
+                 0.7, -0.4, 0.0,
+                 0.7,  1.5, 0.0,
+                -0.5,  1.5, 0.0,
 
                 // Back face
-                1.0, -1.0, -0.05,
-                -1.0, -1.0, -0.05,
-                -1.0,  1.0, -0.05,
-                1.0,  1.0, -0.05,
+                 0.7, -0.4, -0.1,
+                -0.5, -0.4, -0.1,
+                -0.5,  1.5, -0.1,
+				 0.7,  1.5, -0.1,
 
                 // Top face
-                -1.0,  1.0, -0.05,
-                -1.0,  1.0,  0.05,
-                1.0,  1.0,  0.05,
-                1.0,  1.0, -0.05,
+                -0.5, 1.5,  0.0,
+                -0.5, 1.5, -0.1,
+                 0.7, 1.5, -0.1,
+                 0.7, 1.5,  0.0,
 
                 // Bottom face
-                -1.0, -1.0, -0.05,
-                1.0, -1.0, -0.05,
-                1.0, -1.0,  0.05,
-                -1.0, -1.0, 0.05,
+                -0.5, -0.4,  0.0,
+                 0.7, -0.4,  0.0,
+                 0.7, -0.4, -0.1,
+                -0.5, -0.4, -0.1,
 
                 // Right face
-                1.0, -1.0, 0.05,
-                1.0, -1.0, -0.05,
-                1.0,  1.0, -0.05,
-                1.0,  1.0, 0.05,
+                0.7, -0.4, -0.1,
+                0.7, -0.4,  0.0,
+                0.7,  1.5,  0.0,
+                0.7,  1.5, -0.1,
 
 
                 // Left face
-                -1.0, -1.0, -0.05,
-                -1.0, -1.0, 0.05,
-                -1.0,  1.0, 0.05,
-                -1.0,  1.0, -0.05
+                -0.5, -0.4,  0.0,
+                -0.5, -0.4, -0.1,
+                -0.5,  1.5, -0.1,
+                -0.5,  1.5,  0.0
             ];
 
             currentObjectTextureCoordinates = [
@@ -1202,45 +1196,45 @@ function start() {
                 20, 21, 22,     20, 22, 23    // left
             ];
         };
-
+		
         document.getElementById("button5").onclick = function() { // cube
             currentObjectVertices = [
                 // Front face
-                -1.0, -1.0,  1.0,
-                1.0, -1.0,  1.0,
-                1.0,  1.0,  1.0,
-                -1.0,  1.0,  1.0,
+                -0.7, -0.4, 0.6,
+                 0.7, -0.4, 0.6,
+                 0.7,  1.0, 0.6,
+                -0.7,  1.0, 0.6,
 
                 // Back face
-                1.0, -1.0, -1.0,
-                -1.0, -1.0, -1.0,
-                -1.0,  1.0, -1.0,
-                1.0,  1.0, -1.0,
+                -0.7, -0.4, -0.8,
+                 0.7, -0.4, -0.8,
+                 0.7,  1.0, -0.8,
+                -0.7,  1.0, -0.8,
 
                 // Top face
-                -1.0,  1.0, -1.0,
-                -1.0,  1.0,  1.0,
-                1.0,  1.0,  1.0,
-                1.0,  1.0, -1.0,
+                -0.7,  1.0, -0.8,
+                -0.7,  1.0,  0.6,
+                 0.7,  1.0,  0.6,
+                 0.7,  1.0, -0.8,
 
                 // Bottom face
-                -1.0, -1.0, -1.0,
-                1.0, -1.0, -1.0,
-                1.0, -1.0,  1.0,
-                -1.0, -1.0,  1.0,
+                -0.7, -0.4, -0.8,
+                 0.7, -0.4, -0.8,
+                 0.7, -0.4,  0.6,
+                -0.7, -0.4,  0.6,
 
                 // Right face
-                1.0, -1.0,  1.0,
-                1.0, -1.0, -1.0,
-                1.0,  1.0, -1.0,
-                1.0,  1.0,  1.0,
+                0.7, -0.4,  0.6,
+                0.7, -0.4, -0.8,
+                0.7,  1.0, -0.8,
+                0.7,  1.0,  0.6,
 
 
                 // Left face
-                -1.0, -1.0, -1.0,
-                -1.0, -1.0,  1.0,
-                -1.0,  1.0,  1.0,
-                -1.0,  1.0, -1.0
+                -0.7, -0.4, -0.8,
+                -0.7, -0.4,  0.6,
+                -0.7,  1.0,  0.6,
+                -0.7,  1.0, -0.8
             ];
 
             currentObjectTextureCoordinates = [
@@ -1286,54 +1280,61 @@ function start() {
             ];
         };
 
-        document.getElementById("button6").onclick = function() { // pyramid
+		document.getElementById("button6").onclick = function() { // pyramid
             currentObjectVertices = [
                 // Front face
-                0.0, 1.0, 0,
-                -1.0, -1.0,  1.0,
-                1.0, -1.0, 1.0,
-                // left face
-                0.0, 1.0, 0,
-                -1.0, -1.0,  1.0,
-                -1.0, -1.0, -1.0,
-                // back face
-                0.0, 1.0, 0,
-                -1.0, -1.0, -1.0,
-                1.0, -1.0,  -1.0,
-                // right face
-                0.0, 1.0, 0,
-                1.0, -1.0, -1.0,
-                1.0, -1.0, 1.0,
-                // bottom faces
-                1.0, -1.0,  1.0,
-                1.0, -1.0, -1.0,
-                -1.0, -1.0, -1.0,
-                1.0, -1.0,  1.0,
-                -1.0, -1.0, 1.0,
-                -1.0, -1.0, -1.0,
-            ];
+                -1.0, -0.4,  0.0,
+                 1.0, -0.4,  0.0,
+                 0.0,  1.5, -1.0,
 
+                // Back face
+                -1.0, -0.4, -2.0,
+                 1.0, -0.4, -2.0,
+                 0.0,  1.5, -1.0,
+
+                // Right face
+                1.0, -0.4,  0.0,
+                1.0, -0.4, -2.0,
+                0.0,  1.5, -1.0,
+
+                // Left face
+                -1.0, -0.4,  0.0,
+                -1.0, -0.4, -2.0,
+                 0.0,  1.5, -1.0,
+
+				// Bottom faces
+                -1.0, -0.4,  0.0,
+                 1.0, -0.4,  0.0,
+                -1.0, -0.4, -2.0,
+                -1.0, -0.4, -2.0,
+				 1.0, -0.4, -2.0,
+				 1.0, -0.4,  0.0,
+            ];
+			
             currentObjectTextureCoordinates = [
                 // Front
-                0.5, 1,
-                1,  0,
                 0.0,  0.0,
-                0.5, 1,
-                1,  0,
-                0.0,  0.0,
-                0.5, 1,
-                1,  0,
-                0.0,  0.0,
-                0.5, 1,
-                1,  0,
-                0.0,  0.0,
+                1.0,  0.0, 
+				1.0,  1.0,
+				// Back
+                0.0,  1.0,
+                1.0,  1.0, 
+				1.0,  0.0,
+				// Right
+                1.0, 1.0,
+                0.0, 1.0,
+                1.0, 0.0,
+				// Left
+                0.0, 0.0,
+                1.0, 0.0,
+                0.0, 1.0,
                 // bottom
-                1, 1,
-                1,  0,
-                0,  0,
-                1, 1,
-                0,  1,
-                0,  0,
+                1.0, 1.0,
+                1.0, 0.0,
+                0.0, 0.0,
+                1.0, 1.0,
+                0.0, 1.0,
+                0.0, 0.0,
             ];
 
             currentObjectIndices = [
@@ -1341,22 +1342,22 @@ function start() {
             ];
         };
 
-        document.getElementById("button7").onclick = function() { //bridge
+		document.getElementById("button7").onclick = function() { //bridge
             currentObjectVertices = [
-                -2, -1, -1,
-                -2, -1, 1,
-                -2, 1, 1,
-                -2, 1, -1,
+                -1, -0.4, 0,
+                -1, -0.4, 1,
+                -1,  0.6, 1,
+                -1,  0.6, 0,
 
-                -2, 1, -1,
-                -2, 1, 1,
-                2, 1, 1,
-                2, 1, -1,
+                -1, 0.6, 0,
+                -1, 0.6, 1,
+                 1, 0.6, 1,
+                 1, 0.6, 0,
 
-                2, -1, -1,
-                2, -1, 1,
-                2, 1, 1,
-                2, 1, -1,
+                1, -0.4, 0,
+                1, -0.4, 1,
+                1,  0.6, 1,
+                1,  0.6, 0,
             ];
             currentObjectTextureCoordinates = [
                 // left
@@ -1382,24 +1383,24 @@ function start() {
                 8,  9,  10,     8,  10, 11,   // top
             ];
         };
-
-        document.getElementById("button8").onclick = function() { // triangle
-            currentObjectVertices = [0,-1,0];
+		
+		document.getElementById("button8").onclick = function() { // cylinder
+            currentObjectVertices = [0,0,0];
             currentObjectIndices = [];
             currentObjectTextureCoordinates = [0.5,0.5];
 
             var smoothness = 120;
 
             for (var i = 0; i <= smoothness; i++){
-                var x = Math.cos(i*2*Math.PI/smoothness);
-                var y = Math.sin(i*2*Math.PI/smoothness);
+                var x = 0.4*Math.cos(i*2*Math.PI/smoothness);
+                var y = 0.38*Math.sin(i*2*Math.PI/smoothness);
                 currentObjectVertices.push(x);
-                currentObjectVertices.push(-1);
+                currentObjectVertices.push(-0.4);
                 currentObjectVertices.push(y);
 
                 currentObjectTextureCoordinates.push((x + 1) / 2);
                 currentObjectTextureCoordinates.push((y + 1) / 2);
-                currentObjectIndices.push(0);
+                currentObjectIndices.push(-0.4);
                 currentObjectIndices.push(i);
                 currentObjectIndices.push(i + 1);
             }
@@ -1408,13 +1409,13 @@ function start() {
 
             var indiceIndex = currentObjectVertices.length / 3;
             for (var i = 0; i <= smoothness*2 + 1; i++){
-                var x = Math.cos(i*2*Math.PI/smoothness);
-                var y = Math.sin(i*2*Math.PI/smoothness);
+                var x = 0.4*Math.cos(i*2*Math.PI/smoothness);
+                var y = 0.38*Math.sin(i*2*Math.PI/smoothness);
                 currentObjectVertices.push(x);
-                currentObjectVertices.push(-1);
+                currentObjectVertices.push(-0.4);
                 currentObjectVertices.push(y);
                 currentObjectVertices.push(x);
-                currentObjectVertices.push(1);
+                currentObjectVertices.push(1.2);
                 currentObjectVertices.push(y);
 
                 currentObjectTextureCoordinates.push(2*i/smoothness);
@@ -1434,10 +1435,10 @@ function start() {
             indiceIndex = currentObjectVertices.length / 3;
 
             for (var i = 0; i <= smoothness; i++){
-                var x = Math.cos(i*2*Math.PI/smoothness);
-                var y = Math.sin(i*2*Math.PI/smoothness);
+                var x = 0.4*Math.cos(i*2*Math.PI/smoothness);
+                var y = 0.38*Math.sin(i*2*Math.PI/smoothness);
                 currentObjectVertices.push(x);
-                currentObjectVertices.push(1);
+                currentObjectVertices.push(1.2);
                 currentObjectVertices.push(y);
 
                 currentObjectTextureCoordinates.push((x + 1) / 2);
@@ -1449,12 +1450,12 @@ function start() {
             currentObjectIndices.pop();
         };
 
-        document.getElementById("button9").onclick = function() { // triangle
+		document.getElementById("button9").onclick = function() { // sphere
             currentObjectVertices = [];
             currentObjectIndices = [];
             currentObjectTextureCoordinates = [];
 
-            var smoothness = 20;
+            var smoothness = 120;
 
             for (var latNumber = 0; latNumber <= smoothness; latNumber++) {
                 var theta = latNumber * Math.PI / smoothness;
@@ -1466,11 +1467,11 @@ function start() {
                     var sinPhi = Math.sin(phi);
                     var cosPhi = Math.cos(phi);
 
-                    var x = cosPhi * sinTheta;
-                    var y = cosTheta;
-                    var z = sinPhi * sinTheta;
-                    var u = 1 - (longNumber / smoothness);
-                    var v = 1 - (latNumber / smoothness);
+                    var x = 0.8*cosPhi * sinTheta;
+                    var y = 0.8*cosTheta + 0.4;
+                    var z = 0.8*sinPhi * sinTheta;
+                    var u = 0.8*1 - (longNumber / smoothness);
+                    var v = 0.8*1 - (latNumber / smoothness);
 
                     currentObjectTextureCoordinates.push(u * 2);
                     currentObjectTextureCoordinates.push(v * 2);
@@ -1495,37 +1496,36 @@ function start() {
             currentObjectIndices.pop();
             currentObjectIndices.pop();
         };
-
-
+		
+		
         document.getElementById("cancelSelection").onclick = function() {
             currentObjectVertices = false;
         };
 
 
-
         htmlX = document.getElementById("xCoor");
         htmlX.onchange = function(event) {
-            xPosition = parseFloat(htmlX.value);
+            xPosition = parseInt(htmlX.value);
         };
 
         htmlY = document.getElementById("yCoor");
         htmlY.onchange = function(event) {
-            yPosition = parseFloat(htmlY.value);
+            yPosition = parseInt(htmlY.value);
         };
 
         htmlZ = document.getElementById("zCoor");
         htmlZ.onchange = function(event) {
-            zPosition = parseFloat(htmlZ.value);
+            zPosition = parseInt(htmlZ.value);
         };
 
         htmlYaw = document.getElementById("yaw");
         htmlYaw.onchange = function(event) {
-            yaw = parseFloat(htmlYaw.value);
+            yaw = parseInt(htmlYaw.value);
         };
 
         htmlPitch = document.getElementById("pitch");
         htmlPitch.onchange = function(event) {
-            yaw = parseFloat(htmlPitch.value);
+            yaw = parseInt(htmlPitch.value);
         };
 
         document.getElementById("xMinus").onclick = function(event) {
