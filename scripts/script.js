@@ -787,6 +787,8 @@ function animate() {
 
         if (yPosition >= 0.5){
             yPosition += flying * elapsed / 20 * 0.5;
+        } else {
+            yPosition = 0.5;
         }
 
         yaw += yawRate * elapsed;
@@ -809,6 +811,21 @@ function handleKeyDown(event) {
     if (event.keyCode === 13) {
         if (! currentlyPressedKeys[event.keyCode]) {
             newObject();
+        }
+    }
+    if (event.keyCode === 8) {
+        if (! currentlyPressedKeys[event.keyCode]) {
+            newObjects.pop();
+        }
+    }
+    if (event.keyCode === 89) {
+        if (! currentlyPressedKeys[event.keyCode]) {
+            rotatorX = 0;
+            rotatorY = 0;
+            rotatorZ = 0;
+            inSelectionObjectDepth = 4;
+            inSelectionObjectHeight = 0;
+            inSelectionObjectScale = 0.5;
         }
     }
 
@@ -1057,10 +1074,10 @@ function start() {
         document.getElementById("button1").onclick = function() { // square
             currentObjectVertices = [
                 // Front face
-                -0.4, -0.4, 0.0,
-                0.8, -0.4,  0.0,
-                0.8,  0.8,  0.0,
-                -0.4,  0.8,  0.0,
+                -1, -1, 0.0,
+                1, -1,  0.0,
+                1,  1,  0.0,
+                -1,  1,  0.0,
 
             ];
 
@@ -1081,16 +1098,16 @@ function start() {
         document.getElementById("button2").onclick = function() { // triangle
             currentObjectVertices = [
                 // Front face
-                -1.0, 0.0, 0.0,
-                1.0, 0.0,  0.0,
-                0.0, 1.4,  0.0
+                -1.0, -1, 0.0,
+                1.0, -1,  0.0,
+                0.0, 1,  0.0
             ];
 
             currentObjectTextureCoordinates = [
                 // Front
                 0.0,  0.0,
                 1.0,  0.0,
-                1.0,  1.0
+                0.5,  1.0
             ];
 
             currentObjectIndices = [
